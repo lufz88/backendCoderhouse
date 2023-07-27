@@ -4,7 +4,6 @@ class ProductManager {
 	constructor(path) {
 		this.products = [];
 		this.path = path;
-		this.newProductId = 1;
 	}
 
 	addProduct(product) {
@@ -20,9 +19,8 @@ class ProductManager {
 
 		this.products.find(element => element.code == product.code)
 			? console.log('El código del producto ya existe')
-			: this.products.push({ ...product, id: this.newProductId });
+			: this.products.push(product);
 
-		this.newProductId++;
 		let writeProducts = JSON.stringify(this.products);
 		fs.writeFileSync(this.path, writeProducts);
 	}
@@ -59,24 +57,45 @@ class ProductManager {
 	}
 }
 
+class Product {
+	constructor({ title, description, price, thumbnail, code, stock }) {
+		this.title = title;
+		this.description = description;
+		this.price = price;
+		this.thumbnail = thumbnail;
+		this.code = code;
+		this.stock = stock;
+		this.id = Product.incrementarID();
+	}
+
+	static incrementarID() {
+		this.idIncrement ? this.idIncrement++ : (this.idIncrement = 1);
+		return this.idIncrement;
+	}
+}
+
 const manager = new ProductManager('products.txt');
 
-manager.addProduct({
-	title: 'Pantalón',
-	description: 'Un producto',
-	price: 500,
-	thumbnail: 'http://',
-	code: 154,
-	stock: 43,
-});
-manager.addProduct({
-	title: 'Pantalón',
-	description: 'Un producto',
-	price: 500,
-	thumbnail: 'http://',
-	code: 124,
-	stock: 43,
-});
+manager.addProduct(
+	new Product({
+		title: 'Pantalón',
+		description: 'Un producto',
+		price: 500,
+		thumbnail: 'http://',
+		code: 154,
+		stock: 43,
+	})
+);
+manager.addProduct(
+	new Product({
+		title: 'Pantalón',
+		description: 'Un producto',
+		price: 500,
+		thumbnail: 'http://',
+		code: 124,
+		stock: 43,
+	})
+);
 
 let products = manager.getProducts();
 manager.updateProducts(2, { title: 'coco', stock: 12, id: 3 });
