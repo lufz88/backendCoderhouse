@@ -74,8 +74,10 @@ class Product {
 	}
 }
 
+// Crear el manager
 const manager = new ProductManager('products.txt');
 
+// Añadir productos
 manager.addProduct(
 	new Product({
 		title: 'Pantalón',
@@ -97,7 +99,38 @@ manager.addProduct(
 	})
 );
 
+manager.addProduct(
+	new Product({
+		title: 'Pantalón',
+		description: 'Un producto',
+		price: 500,
+		thumbnail: 'http://',
+		code: 453,
+		stock: 43,
+	})
+);
+
+// Añadir producto con mismo codigo
+manager.addProduct(
+	new Product({
+		title: 'Pantalón',
+		description: 'Un producto',
+		price: 500,
+		thumbnail: 'http://',
+		code: 124,
+		stock: 43,
+	})
+);
+
+// mostrar productos
 let products = manager.getProducts();
-manager.updateProducts(2, { title: 'coco', stock: 12, id: 3 });
+console.log('Todos los productos: ', products);
+// mostrar por ID
+console.log('Producto id 2: ', manager.getProductById(2));
+// eliminar un producto
+manager.deleteProduct(3);
+// actualizar un producto
+manager.updateProducts(2, { title: 'Remera', stock: 12, id: 3 });
+// mostrar productos
 products = manager.getProducts();
-console.log(products);
+console.log('Todos los productos: ', products);
