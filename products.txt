@@ -1,1 +1,1 @@
-[]
+[{"title":"Pantalón","description":"Un producto","price":500,"thumbnail":"http://","code":154,"stock":43,"id":1},{"title":"Remera","description":"Un producto","price":500,"thumbnail":"http://","code":124,"stock":12,"id":2}]

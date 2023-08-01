@@ -7,7 +7,7 @@ class ProductManager {
 	}
 
 	addProduct(product) {
-		this.readFile();
+		ProductManager.readFile(this.path);
 		const { title, description, price, thumbnail, code, stock } = product;
 
 		if (!title || !description || !price || !thumbnail || !code || !stock) {
@@ -26,17 +26,17 @@ class ProductManager {
 	}
 
 	getProducts() {
-		this.readFile();
+		ProductManager.readFile(this.path);
 		return this.products;
 	}
 
 	getProductById(id) {
-		this.readFile();
+		ProductManager.readFile(this.path);
 		return this.products.find(product => product.id == id) ?? console.log('Not Found');
 	}
 
 	updateProducts(id, update) {
-		this.readFile();
+		ProductManager.readFile(this.path);
 		let product = this.products.find(prod => prod.id == id);
 		let keys = Object.keys(update);
 		keys.map(key => key !== 'id' && (product[key] = update[key]));
@@ -45,14 +45,14 @@ class ProductManager {
 	}
 
 	deleteProduct(id) {
-		this.readFile();
+		ProductManager.readFile(this.path);
 		this.products = this.products.filter(prod => prod.id !== id);
 		let writeProducts = JSON.stringify(this.products);
 		fs.writeFileSync(this.path, writeProducts);
 	}
 
-	readFile() {
-		let resultado = fs.readFileSync(this.path, 'utf-8');
+	static readFile(path) {
+		let resultado = fs.readFileSync(path, 'utf-8');
 		this.products = JSON.parse(resultado);
 	}
 }
