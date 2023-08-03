@@ -14,14 +14,13 @@ app.get('/', (req, res) => {
 });
 
 app.get('/productos/:id', async (req, res) => {
-	let products = await manager.getProducts();
-	const product = products.find(prod => prod.id === parseInt(req.params.id));
+	const product = await manager.getProductById(parseInt(req.params.id);
 	product ? res.send(product) : res.send('Producto no encontrado');
 });
 
 app.get('/productos', async (req, res) => {
 	const { limit } = req.query;
-	let products = await manager.getProducts();
+	const products = await manager.getProducts();
 	limit ? res.send(products.slice(0, limit)) : res.send(products);
 });
 
