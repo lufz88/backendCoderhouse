@@ -5,7 +5,7 @@ const app = express();
 
 const PORT = 4000;
 
-const manager = new ProductManager('./src/products.txt');
+const manager = new ProductManager('./src/products.json');
 
 app.use(express.urlencoded({ extended: true }));
 
@@ -14,7 +14,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/productos/:id', async (req, res) => {
-	const product = await manager.getProductById(parseInt(req.params.id);
+	const product = await manager.getProductById(parseInt(req.params.id));
 	product ? res.send(product) : res.send('Producto no encontrado');
 });
 
