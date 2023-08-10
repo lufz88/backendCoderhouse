@@ -1,0 +1,17 @@
+<html lang='en'>{{!  ARCHIVO BASE }}
+	<head>
+		<meta charset='UTF-8' />
+		<meta name='viewport' content='width=device-width, initial-scale=1.0' />
+		<title>Document</title>
+    <link rel="stylesheet" href="./css/styles.css">
+	</head>
+	<body>
+    {{>nav}}
+		{{{body}}}
+		{{! esto es lo que se va a modificar con mis plantilas, va a ir cambiando de acuerdo a qué plantilla quiera mostrar en el body }}
+    {{>footer}}
+
+    {{!-- nav y footer son partials, se van a repetir --}}
+    <script src="./js/script.js"></script>
+  </body>
+</html>
