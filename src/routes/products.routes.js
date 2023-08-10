@@ -22,7 +22,6 @@ routerProd.get('/:id', async (req, res) => {
 });
 
 routerProd.post('/', async (req, res) => {
-	console.log(req.body);
 	const confirmacion = await manager.addProduct(req.body);
 	confirmacion
 		? res.status(200).send('Producto creado correctamente')

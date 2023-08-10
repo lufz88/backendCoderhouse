@@ -8,7 +8,6 @@ export class ProductManager {
 
 	async addProduct(product) {
 		this.products = JSON.parse(await fs.readFile(this.path, 'utf-8'));
-		console.log(product);
 		const { title, description, price, thumbnail, code, stock } = product;
 
 		if (!title || !description || !price || !thumbnail || !code || !stock) {
