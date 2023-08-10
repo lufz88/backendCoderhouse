@@ -7,7 +7,8 @@ export class ProductManager {
 	}
 
 	async addProduct(product) {
-		this.products = JSON.parse(await fs.readFile(path, 'utf-8'));
+		this.products = JSON.parse(await fs.readFile(this.path, 'utf-8'));
+		console.log(product);
 		const { title, description, price, thumbnail, code, stock } = product;
 
 		if (!title || !description || !price || !thumbnail || !code || !stock) {
@@ -17,12 +18,17 @@ export class ProductManager {
 			return;
 		}
 
-		this.products.find(element => element.code == product.code)
-			? console.log('El código del producto ya existe')
-			: this.products.push(product);
+		const prodExists = this.products.find(element => element.code === code);
+		if (prodExists) {
+			return false;
+		} else {
+			product.id = ProductManager.incrementarID();
+			this.products.push(product);
+		}
 
 		let writeProducts = JSON.stringify(this.products);
 		await fs.writeFile(this.path, writeProducts);
+		return true;
 	}
 
 	async getProducts() {
@@ -32,35 +38,32 @@ export class ProductManager {
 
 	async getProductById(id) {
 		this.products = JSON.parse(await fs.readFile(this.path, 'utf-8'));
-		return this.products.find(product => product.id == id) ?? console.log('Not Found');
+		return this.products.find(product => product.id == id) ?? false;
 	}
 
 	async updateProducts(id, update) {
 		this.products = JSON.parse(await fs.readFile(this.path, 'utf-8'));
 		let product = this.products.find(prod => prod.id == id);
+		if (!product) {
+			return false;
+		}
+
 		let keys = Object.keys(update);
 		keys.map(key => key !== 'id' && (product[key] = update[key]));
 		let writeProducts = JSON.stringify(this.products);
 		await fs.writeFile(this.path, writeProducts);
+		return true;
 	}
 
 	async deleteProduct(id) {
-		this.products = JSON.parse(await fs.readFile(this.path, 'utf-8'));
-		this.products = this.products.filter(prod => prod.id !== id);
+		const fileProducts = JSON.parse(await fs.readFile(this.path, 'utf-8'));
+		this.products = fileProducts.filter(prod => prod.id !== id);
+		if (this.products.length === fileProducts.length) {
+			return false;
+		}
 		let writeProducts = JSON.stringify(this.products);
 		await fs.writeFile(this.path, writeProducts);
-	}
-}
-
-class Product {
-	constructor({ title, description, price, thumbnail, code, stock }) {
-		this.title = title;
-		this.description = description;
-		this.price = price;
-		this.thumbnail = thumbnail;
-		this.code = code;
-		this.stock = stock;
-		this.id = Product.incrementarID();
+		return true;
 	}
 
 	static incrementarID() {
@@ -68,3 +71,20 @@ class Product {
 		return this.idIncrement;
 	}
 }
+
+// class Product {
+// 	constructor({ title, description, price, thumbnail, code, stock }) {
+// 		this.title = title;
+// 		this.description = description;
+// 		this.price = price;
+// 		this.thumbnail = thumbnail;
+// 		this.code = code;
+// 		this.stock = stock;
+// 		this.id = Product.incrementarID();
+// 	}
+
+// 	static incrementarID() {
+// 		this.idIncrement ? this.idIncrement++ : (this.idIncrement = 1);
+// 		return this.idIncrement;
+// 	}
+// }
