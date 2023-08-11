@@ -1,28 +1,53 @@
 import { promises as fs } from 'fs';
 
 export class CartManager {
-	constructor(path) {
-		this.products = [];
-		this.path = path;
-		this.id = CartManager.incrementarID();
+	constructor(cartsPath, productsPath) {
+		this.carts = [];
+		this.cartsPath = cartsPath;
+		this.productsPath = productsPath;
 	}
 	static incrementarID() {
 		this.idIncrement ? this.idIncrement++ : (this.idIncrement = 1);
 		return this.idIncrement;
 	}
 
-	async addProduct(product) {
-		this.products = JSON.parse(await fs.readFile(this.path, 'utf-8'));
-		const productExist = this.products.find(item => item.id === product.id);
-		productExist
-			? productExist.quantity++
-			: this.products.push({ id: product.id, quantity: 1 });
-		await fs.writeFile(this.path, writeProducts);
+	async createCart() {
+		this.carts = JSON.parse(await fs.readFile(this.cartsPath, 'utf-8'));
+		const newCart = { id: CartManager.incrementarID(), products: [] };
+		this.carts.push(newCart);
+		const writeCarts = JSON.stringify(this.carts);
+		await fs.writeFile(this.path, writeCarts);
 	}
 
-	async getProducts() {
-		this.products = JSON.parse(await fs.readFile(this.path, 'utf-8'));
+	async getProductsFromCart(id) {
+		this.carts = JSON.parse(await fs.readFile(this.cartsPath, 'utf-8'));
+		const cart = this.carts.find(cart => cart.id === id);
+		if (cart) {
+			return cart.products;
+		} else {
+			return false;
+		}
+	}
+	async addProductToCart(cid, pid) {
+		this.carts = JSON.parse(await fs.readFile(this.cartsPath, 'utf-8'));
+		const products = JSON.parse(await fs.readFile(this.productsPath, 'utf-8'));
+		const product = products.find(prod => prod.id === pid);
+		const cart = this.carts.find(cart => cart.id === cid);
 
-		return this.products;
+		if (!product) {
+			return false;
+		}
+
+		if (cart) {
+			const productExist = cart.products.find(item => item.id === pid);
+			productExist
+				? productExist.quantity++
+				: cart.products.push({ id: product.id, quantity: 1 });
+			const writeCarts = JSON.stringify(this.carts);
+			await fs.writeFile(this.cartsPath, writeCarts);
+			return true;
+		} else {
+			return false;
+		}
 	}
 }

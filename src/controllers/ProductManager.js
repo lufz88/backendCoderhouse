@@ -8,9 +8,9 @@ export class ProductManager {
 
 	async addProduct(product) {
 		this.products = JSON.parse(await fs.readFile(this.path, 'utf-8'));
-		const { title, description, price, thumbnail, code, stock } = product;
+		const { title, description, price, code, stock, status } = product;
 
-		if (!title || !description || !price || !thumbnail || !code || !stock) {
+		if (!title || !description || !price || !status || !code || !stock) {
 			console.log(
 				'El producto debe incluir los campos title, description, price, thumbnail, code y stock'
 			);
@@ -22,6 +22,7 @@ export class ProductManager {
 			return false;
 		} else {
 			product.id = ProductManager.incrementarID();
+			status = true;
 			this.products.push(product);
 		}
 
