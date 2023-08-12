@@ -12,7 +12,7 @@ export class ProductManager {
 
 		if (!title || !description || !price || !status || !code || !stock) {
 			console.log(
-				'El producto debe incluir los campos title, description, price, thumbnail, code y stock'
+				'El producto debe incluir los campos title, description, price, status, code y stock'
 			);
 			return;
 		}
@@ -22,7 +22,7 @@ export class ProductManager {
 			return false;
 		} else {
 			product.id = ProductManager.incrementarID();
-			status = true;
+			product.status = true;
 			this.products.push(product);
 		}
 
