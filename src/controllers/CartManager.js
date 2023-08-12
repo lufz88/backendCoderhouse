@@ -6,6 +6,7 @@ export class CartManager {
 		this.cartsPath = cartsPath;
 		this.productsPath = productsPath;
 	}
+
 	static incrementarID() {
 		this.idIncrement ? this.idIncrement++ : (this.idIncrement = 1);
 		return this.idIncrement;
@@ -16,12 +17,13 @@ export class CartManager {
 		const newCart = { id: CartManager.incrementarID(), products: [] };
 		this.carts.push(newCart);
 		const writeCarts = JSON.stringify(this.carts);
-		await fs.writeFile(this.path, writeCarts);
+		await fs.writeFile(this.cartsPath, writeCarts);
 	}
 
 	async getProductsFromCart(id) {
 		this.carts = JSON.parse(await fs.readFile(this.cartsPath, 'utf-8'));
 		const cart = this.carts.find(cart => cart.id === id);
+
 		if (cart) {
 			return cart.products;
 		} else {
@@ -30,16 +32,17 @@ export class CartManager {
 	}
 	async addProductToCart(cid, pid) {
 		this.carts = JSON.parse(await fs.readFile(this.cartsPath, 'utf-8'));
+		const cart = this.carts.find(cart => cart.id === cid);
+
 		const products = JSON.parse(await fs.readFile(this.productsPath, 'utf-8'));
 		const product = products.find(prod => prod.id === pid);
-		const cart = this.carts.find(cart => cart.id === cid);
 
 		if (!product) {
 			return false;
 		}
 
 		if (cart) {
-			const productExist = cart.products.find(item => item.id === pid);
+			const productExist = cart.products.find(prod => prod.id === pid);
 			productExist
 				? productExist.quantity++
 				: cart.products.push({ id: product.id, quantity: 1 });

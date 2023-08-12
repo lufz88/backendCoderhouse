@@ -30,7 +30,7 @@ routerProd.post('/', async (req, res) => {
 
 routerProd.put('/:pid', async (req, res) => {
 	const { pid } = req.params;
-	const confirmacion = await productManager.addProduct(pid, req.body);
+	const confirmacion = await productManager.updateProducts(parseInt(pid), req.body);
 	confirmacion
 		? res.status(200).send('Producto actualizado correctamente')
 		: res.status(400).send('Producto ya existente');
@@ -38,7 +38,7 @@ routerProd.put('/:pid', async (req, res) => {
 
 routerProd.delete('/:pid', async (req, res) => {
 	const { pid } = req.params;
-	const confirmacion = await productManager.addProduct(parseInt(pid));
+	const confirmacion = await productManager.deleteProduct(parseInt(pid));
 	confirmacion
 		? res.status(200).send('Producto eliminado correctamente')
 		: res.status(404).send('Producto no encontrado');
