@@ -7,14 +7,9 @@ export class CartManager {
 		this.productsPath = productsPath;
 	}
 
-	static incrementarID() {
-		this.idIncrement ? this.idIncrement++ : (this.idIncrement = 1);
-		return this.idIncrement;
-	}
-
 	async createCart() {
 		this.carts = JSON.parse(await fs.readFile(this.cartsPath, 'utf-8'));
-		const newCart = { id: CartManager.incrementarID(), products: [] };
+		const newCart = { id: this.carts.length + 1, products: [] };
 		this.carts.push(newCart);
 		const writeCarts = JSON.stringify(this.carts);
 		await fs.writeFile(this.cartsPath, writeCarts);
