@@ -21,7 +21,7 @@ export class ProductManager {
 		if (prodExists) {
 			return false;
 		} else {
-			product.id = this.products.length + 1;
+			product.id = ProductManager.incrementId(this.products);
 			product.status = true;
 			this.products.push(product);
 		}
@@ -64,6 +64,14 @@ export class ProductManager {
 		let writeProducts = JSON.stringify(this.products);
 		await fs.writeFile(this.path, writeProducts);
 		return true;
+	}
+
+	static incrementId(products) {
+		const ids = [];
+		let newId = 1;
+		products.forEach(product => ids.push(product.id));
+		products.length > 0 && (newId = Math.max(...ids) + 1);
+		return newId;
 	}
 }
 

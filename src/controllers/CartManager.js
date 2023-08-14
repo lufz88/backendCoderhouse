@@ -9,7 +9,7 @@ export class CartManager {
 
 	async createCart() {
 		this.carts = JSON.parse(await fs.readFile(this.cartsPath, 'utf-8'));
-		const newCart = { id: this.carts.length + 1, products: [] };
+		const newCart = { id: CartManager.incrementId(this.carts), products: [] };
 		this.carts.push(newCart);
 		const writeCarts = JSON.stringify(this.carts);
 		await fs.writeFile(this.cartsPath, writeCarts);
@@ -47,5 +47,13 @@ export class CartManager {
 		} else {
 			return false;
 		}
+	}
+
+	static incrementId(carts) {
+		const ids = [];
+		let newId = 1;
+		carts.forEach(cart => ids.push(cart.id));
+		carts.length > 0 && (newId = Math.max(...ids) + 1);
+		return newId;
 	}
 }
