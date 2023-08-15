@@ -50,9 +50,8 @@ export class CartManager {
 	}
 
 	static incrementId(carts) {
-		const ids = [];
+		const ids = carts.map(cart => cart.id);
 		let newId = 1;
-		carts.forEach(cart => ids.push(cart.id));
 		carts.length > 0 && (newId = Math.max(...ids) + 1);
 		return newId;
 	}

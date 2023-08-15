@@ -67,9 +67,8 @@ export class ProductManager {
 	}
 
 	static incrementId(products) {
-		const ids = [];
+		const ids = products.map(product => product.id);
 		let newId = 1;
-		products.forEach(product => ids.push(product.id));
 		products.length > 0 && (newId = Math.max(...ids) + 1);
 		return newId;
 	}
