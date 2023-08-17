@@ -26,10 +26,18 @@ app.engine('handlebars', engine()); //defino que mi motor de plantillas va a ser
 app.set('view engine', 'handlebars');
 app.set('views', path.resolve(__dirname, './views'));
 
+const mensajes = [];
+
 // Conexión con socket.io
 
 io.on('connection', socket => {
 	console.log('Conexión con Socket.io');
+
+	socket.on('mensaje', info => {
+		console.log(info);
+		mensajes.push(info);
+		io.emit('mensajes', mensajes);
+	});
 });
 
 // Routes
@@ -37,13 +45,19 @@ app.use('/static', express.static(path.join(__dirname, '/public')));
 
 app.get('/static', (req, res) => {
 	// indicar que plantilla voy a utilizar
-	const user = {
-		nombre: 'Lucía',
-		cargo: 'Tutor',
-	};
-	res.render('home', {
-		usuario: user,
-		isTutor: user.cargo == 'Tutor', // Tengo que consultarlo antes, en el js porque handlebars no puede manejar operadores logicos
+	// const user = {
+	// 	nombre: 'Lucía',
+	// 	cargo: 'Tutor',
+	// };
+
+	// res.render('home', {
+	// 	usuario: user,
+	// 	isTutor: user.cargo == 'Tutor', // Tengo que consultarlo antes, en el js porque handlebars no puede manejar operadores logicos
+	// });
+
+	res.render('chat', {
+		rutaCSS: 'chat',
+		rutaJS: 'chat',
 	});
 });
 
