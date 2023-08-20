@@ -6,9 +6,12 @@ import path from 'path';
 
 import routerProd from './routes/products.routes.js';
 import routerCart from './routes/cart.routes.js';
+import { ProductManager } from './controllers/ProductManager.js';
 const app = express();
 
 const PORT = 8080;
+
+const productManager = new ProductManager('./src/models/products.json');
 
 // Server
 const server = app.listen(PORT, () => {
@@ -33,31 +36,38 @@ const mensajes = [];
 io.on('connection', socket => {
 	console.log('Conexión con Socket.io');
 
-	socket.on('mensaje', info => {
-		console.log(info);
-		mensajes.push(info);
-		io.emit('mensajes', mensajes);
+	socket.on('load', async () => {
+		const products = await productManager.getProducts();
+		socket.emit('products', products);
+	});
+
+	socket.on('newProduct', async product => {
+		await productManager.addProduct(product);
+		const products = await productManager.getProducts();
+		socket.emit('products', products);
 	});
 });
+// 	socket.on('mensaje', info => {
+// 		console.log(info);
+// 		mensajes.push(info);
+// 		io.emit('mensajes', mensajes);
+// 	});
+// });
 
 // Routes
 app.use('/static', express.static(path.join(__dirname, '/public')));
 
 app.get('/static', (req, res) => {
-	// indicar que plantilla voy a utilizar
-	// const user = {
-	// 	nombre: 'Lucía',
-	// 	cargo: 'Tutor',
-	// };
+	res.render('index', {
+		rutaCSS: 'index',
+		rutaJS: 'index',
+	});
+});
 
-	// res.render('home', {
-	// 	usuario: user,
-	// 	isTutor: user.cargo == 'Tutor', // Tengo que consultarlo antes, en el js porque handlebars no puede manejar operadores logicos
-	// });
-
-	res.render('chat', {
-		rutaCSS: 'chat',
-		rutaJS: 'chat',
+app.get('/static/realtimeproducts', (req, res) => {
+	res.render('realTimeProducts', {
+		rutaCSS: 'realTimeProducts',
+		rutaJS: 'realTimeProducts',
 	});
 });
 
