@@ -3,6 +3,7 @@ import { engine } from 'express-handlebars';
 import { Server } from 'socket.io';
 import { __dirname } from './path.js';
 import path from 'path';
+import mongoose from 'mongoose';
 
 import routerProd from './routes/products.routes.js';
 import routerCart from './routes/carts.routes.js';
@@ -30,7 +31,14 @@ app.engine('handlebars', engine()); //defino que mi motor de plantillas va a ser
 app.set('view engine', 'handlebars');
 app.set('views', path.resolve(__dirname, './views'));
 
-const mensajes = [];
+// conexión con base de datos
+
+mongoose
+	.connect(
+		'mongodb+srv://lufz88:wEOxuETMFjq418IT@codercluster.hjjsq0f.mongodb.net/?retryWrites=true&w=majority'
+	)
+	.then(() => console.log('DB conectada'))
+	.catch(error => console.log(`Error en conexión a MongoDB Atlas:  ${error}`));
 
 // Conexión con socket.io
 
