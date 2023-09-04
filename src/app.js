@@ -5,7 +5,8 @@ import { __dirname } from './path.js';
 import path from 'path';
 
 import routerProd from './routes/products.routes.js';
-import routerCart from './routes/cart.routes.js';
+import routerCart from './routes/carts.routes.js';
+import routerMessage from './routes/messages.routes.js';
 import { ProductManager } from './controllers/ProductManager.js';
 const app = express();
 
@@ -67,3 +68,4 @@ app.get('/static/realtimeproducts', (req, res) => {
 
 app.use('/api/products', routerProd); // defino que mi app va a usar lo que venga en routerProd para la ruta que defina
 app.use('/api/carts', routerCart);
+app.use('/api/messages', routerMessage);
