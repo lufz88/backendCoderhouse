@@ -89,7 +89,7 @@ routerProd.post('/', async (req, res) => {
 	}
 });
 
-routerProd.update('/:pid', async (req, res) => {
+routerProd.put('/:pid', async (req, res) => {
 	const { pid } = req.params;
 	const { title, description, stock, code, price, category, status } = req.body;
 	try {

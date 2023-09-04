@@ -64,7 +64,7 @@ routerCart.post('/', async (req, res) => {
 	}
 });
 
-routerCart.update('/:cid', async (req, res) => {
+routerCart.put('/:cid', async (req, res) => {
 	const { cid } = req.params;
 	const { id_prod, quantity } = req.body;
 

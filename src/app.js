@@ -5,6 +5,8 @@ import { __dirname } from './path.js';
 import path from 'path';
 import mongoose from 'mongoose';
 
+import messageModel from './models/message.models.js';
+
 import routerProd from './routes/products.routes.js';
 import routerCart from './routes/carts.routes.js';
 import routerMessage from './routes/messages.routes.js';
@@ -55,6 +57,17 @@ io.on('connection', socket => {
 		const products = await productManager.getProducts();
 		socket.emit('products', products);
 	});
+
+	socket.on('mensaje', async info => {
+		const { email, message } = info;
+		await messageModel.create({
+			email,
+			message,
+		});
+		const messages = await messageModel.find();
+
+		io.emit('mensajes', messages);
+	});
 });
 
 // Routes
@@ -71,6 +84,13 @@ app.get('/static/realtimeproducts', (req, res) => {
 	res.render('realTimeProducts', {
 		rutaCSS: 'realTimeProducts',
 		rutaJS: 'realTimeProducts',
+	});
+});
+
+app.get('/static/chat', (req, res) => {
+	res.render('chat', {
+		rutaCSS: 'chat',
+		rutaJS: 'chat',
 	});
 });
 
