@@ -11,6 +11,7 @@ import routerProd from './routes/products.routes.js';
 import routerCart from './routes/carts.routes.js';
 import routerMessage from './routes/messages.routes.js';
 import { ProductManager } from './controllers/ProductManager.js';
+import productModel from './models/products.models.js';
 const app = express();
 
 const PORT = 8080;
@@ -48,13 +49,14 @@ io.on('connection', socket => {
 	console.log('Conexión con Socket.io');
 
 	socket.on('load', async () => {
-		const products = await productManager.getProducts();
+		const products = await productModel.find();
 		socket.emit('products', products);
 	});
 
 	socket.on('newProduct', async product => {
-		await productManager.addProduct(product);
-		const products = await productManager.getProducts();
+		await productModel.create(product);
+		const products = await productModel.find();
+
 		socket.emit('products', products);
 	});
 

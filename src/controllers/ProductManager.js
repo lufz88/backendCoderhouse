@@ -8,9 +8,9 @@ export class ProductManager {
 
 	async addProduct(product) {
 		this.products = JSON.parse(await fs.readFile(this.path, 'utf-8'));
-		const { title, description, price, code, stock, status } = product;
+		const { title, description, price, code, stock } = product;
 
-		if (!title || !description || !price || !status || !code || !stock) {
+		if (!title || !description || !price || !code || !stock) {
 			console.log(
 				'El producto debe incluir los campos title, description, price, status, code y stock'
 			);
