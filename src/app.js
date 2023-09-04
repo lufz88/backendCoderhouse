@@ -47,12 +47,6 @@ io.on('connection', socket => {
 		socket.emit('products', products);
 	});
 });
-// 	socket.on('mensaje', info => {
-// 		console.log(info);
-// 		mensajes.push(info);
-// 		io.emit('mensajes', mensajes);
-// 	});
-// });
 
 // Routes
 app.use('/static', express.static(path.join(__dirname, '/public')));
