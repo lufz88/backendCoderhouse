@@ -73,7 +73,7 @@ routerCart.put('/:cid/product/:pid', async (req, res) => {
 		}
 
 		if (cart) {
-			const productExists = cart.products.find(prod => prod.id === pid);
+			const productExists = cart.products.find(prod => prod.id_prod == pid);
 			productExists
 				? productExists.quantity++
 				: cart.products.push({ id_prod: product._id, quantity: 1 });
