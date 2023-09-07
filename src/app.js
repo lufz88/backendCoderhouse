@@ -10,8 +10,9 @@ import messageModel from './models/message.models.js';
 import routerProd from './routes/products.routes.js';
 import routerCart from './routes/carts.routes.js';
 import routerMessage from './routes/messages.routes.js';
-import { ProductManager } from './controllers/ProductManager.js';
 import productModel from './models/products.models.js';
+import { ProductManager } from './controllers/ProductManager.js';
+
 const app = express();
 
 const PORT = 8080;
@@ -42,6 +43,8 @@ mongoose
 	)
 	.then(() => console.log('DB conectada'))
 	.catch(error => console.log(`Error en conexión a MongoDB Atlas:  ${error}`));
+
+
 
 // Conexión con socket.io
 
