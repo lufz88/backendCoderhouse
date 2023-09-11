@@ -5,6 +5,8 @@ const pageNumber = document.querySelector('#page-number');
 const previousButton = document.querySelector('#prev-page-button');
 const nextButton = document.querySelector('#next-page-button');
 
+let page;
+
 socket.emit('load');
 
 socket.on('products', data => {
@@ -25,5 +27,19 @@ socket.on('products', data => {
   
     `;
 	});
-	pageNumber.innerText = data.page;
+	page = data.page;
+	pageNumber.innerText = page;
+	!data.hasPrevPage ? (previousButton.disabled = true) : (previousButton.disabled = false);
+	!data.hasNextPage ? (nextButton.disabled = true) : (nextButton.disabled = false);
+});
+
+console.log(page);
+previousButton.addEventListener('click', () => {
+	page--;
+	socket.emit('previousPage', page);
+});
+
+nextButton.addEventListener('click', () => {
+	page++;
+	socket.emit('nextPage', page);
 });

@@ -51,6 +51,16 @@ io.on('connection', socket => {
 		socket.emit('products', data);
 	});
 
+	socket.on('previousPage', async page => {
+		const data = await productModel.paginate({}, { limit: 5, page: page });
+		socket.emit('products', data);
+	});
+
+	socket.on('nextPage', async page => {
+		const data = await productModel.paginate({}, { limit: 5, page: page });
+		socket.emit('products', data);
+	});
+
 	socket.on('newProduct', async product => {
 		await productModel.create(product);
 		const products = await productModel.find();
