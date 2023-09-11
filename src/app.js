@@ -11,6 +11,7 @@ import routerProd from './routes/products.routes.js';
 import routerCart from './routes/carts.routes.js';
 import routerMessage from './routes/messages.routes.js';
 import productModel from './models/products.models.js';
+import cartModel from './models/carts.models.js';
 
 const app = express();
 
@@ -59,6 +60,24 @@ io.on('connection', socket => {
 	socket.on('nextPage', async page => {
 		const data = await productModel.paginate({}, { limit: 5, page: page });
 		socket.emit('products', data);
+	});
+
+	socket.on('addProduct', async data => {
+		const { pid, cartId } = data;
+		if (cartId) {
+			const cart = await cartModel.findById(cartId);
+			const productExists = cart.products.find(prod => prod.id_prod == pid);
+			productExists
+				? productExists.quantity++
+				: cart.products.push({ id_prod: pid, quantity: 1 });
+			await cart.save();
+			socket.emit('success', cartId);
+		} else {
+			const cart = await cartModel.create({});
+			cart.products.push({ id_prod: pid, quantity: 1 });
+			await cart.save();
+			socket.emit('success', cart._id.toString());
+		}
 	});
 
 	socket.on('newProduct', async product => {
