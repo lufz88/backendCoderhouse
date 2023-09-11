@@ -80,6 +80,11 @@ io.on('connection', socket => {
 		}
 	});
 
+	socket.on('loadCart', async cid => {
+		const cart = await cartModel.findById(cid);
+		socket.emit('cartProducts', cart.products);
+	});
+
 	socket.on('newProduct', async product => {
 		await productModel.create(product);
 		const products = await productModel.find();
@@ -95,12 +100,12 @@ io.on('connection', socket => {
 		});
 		const messages = await messageModel.find();
 
-		io.emit('mensajes', messages);
+		socket.emit('mensajes', messages);
 	});
 });
 
 // Routes
-app.use('/static', express.static(path.join(__dirname, '/public')));
+app.use('/static', express.static(path.join(__dirname, 'public')));
 
 app.get('/static', (req, res) => {
 	res.render('index', {
@@ -127,6 +132,13 @@ app.get('/static/products', (req, res) => {
 	res.render('products', {
 		rutaCSS: 'products',
 		rutaJS: 'products',
+	});
+});
+
+app.get('/static/carts/:cid', (req, res) => {
+	res.render('carts', {
+		rutaCSS: 'carts',
+		rutaJS: 'carts',
 	});
 });
 
