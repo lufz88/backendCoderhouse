@@ -11,13 +11,10 @@ import routerProd from './routes/products.routes.js';
 import routerCart from './routes/carts.routes.js';
 import routerMessage from './routes/messages.routes.js';
 import productModel from './models/products.models.js';
-import { ProductManager } from './controllers/ProductManager.js';
 
 const app = express();
 
 const PORT = 8080;
-
-const productManager = new ProductManager('./src/models/products.json');
 
 // Server
 const server = app.listen(PORT, () => {
@@ -44,16 +41,14 @@ mongoose
 	.then(() => console.log('DB conectada'))
 	.catch(error => console.log(`Error en conexión a MongoDB Atlas:  ${error}`));
 
-
-
 // Conexión con socket.io
 
 io.on('connection', socket => {
 	console.log('Conexión con Socket.io');
 
 	socket.on('load', async () => {
-		const products = await productModel.find();
-		socket.emit('products', products);
+		const data = await productModel.paginate({}, { limit: 5 });
+		socket.emit('products', data);
 	});
 
 	socket.on('newProduct', async product => {
@@ -96,6 +91,13 @@ app.get('/static/chat', (req, res) => {
 	res.render('chat', {
 		rutaCSS: 'chat',
 		rutaJS: 'chat',
+	});
+});
+
+app.get('/static/products', (req, res) => {
+	res.render('products', {
+		rutaCSS: 'products',
+		rutaJS: 'products',
 	});
 });
 

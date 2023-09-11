@@ -1,6 +1,9 @@
 const socket = io();
 
 const productsContainer = document.querySelector('#products-container');
+const pageNumber = document.querySelector('#page-number');
+const previousButton = document.querySelector('#prev-page-button');
+const nextButton = document.querySelector('#next-page-button');
 
 socket.emit('load');
 
@@ -22,4 +25,5 @@ socket.on('products', data => {
   
     `;
 	});
+	pageNumber.innerText = data.page;
 });

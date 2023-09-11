@@ -1,0 +1,15 @@
+.product-container {
+	width: 400px;
+	margin-bottom: 8px;
+	border-bottom: 1px solid black;
+}
+
+.pagination {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+button {
+	width: 60px;
+	height: 30px;
+}

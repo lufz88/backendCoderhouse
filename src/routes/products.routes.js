@@ -1,58 +1,27 @@
 // .routes.js lo unico que hace es que cambia el icono a un icono de rutas
 import { Router } from 'express';
-import { ProductManager } from '../controllers/ProductManager.js';
 import productModel from '../models/products.models.js';
 
 const routerProd = Router();
-const productManager = new ProductManager('./src/models/products.json');
-
-// implementación con JSON
-
-// routerProd.get('/', async (req, res) => {
-// 	const { limit } = req.query;
-
-// 	const prods = await productManager.getProducts();
-// 	const productos = prods.slice(0, limit);
-
-// 	res.status(200).send(productos);
-// });
-
-// routerProd.get('/:pid', async (req, res) => {
-// 	const { pid } = req.params;
-// 	const prod = await productManager.getProductById(parseInt(pid));
-
-// 	prod ? res.status(200).send(prod) : res.status(404).send('Producto no existente');
-// });
-
-// routerProd.post('/', async (req, res) => {
-// 	const confirmacion = await productManager.addProduct(req.body);
-// 	confirmacion
-// 		? res.status(200).send('Producto creado correctamente')
-// 		: res.status(400).send('Producto ya existente');
-// });
-
-// routerProd.put('/:pid', async (req, res) => {
-// 	const { pid } = req.params;
-// 	const confirmacion = await productManager.updateProducts(parseInt(pid), req.body);
-// 	confirmacion
-// 		? res.status(200).send('Producto actualizado correctamente')
-// 		: res.status(400).send('Producto ya existente');
-// });
-
-// routerProd.delete('/:pid', async (req, res) => {
-// 	const { pid } = req.params;
-// 	const confirmacion = await productManager.deleteProduct(parseInt(pid));
-// 	confirmacion
-// 		? res.status(200).send('Producto eliminado correctamente')
-// 		: res.status(404).send('Producto no encontrado');
-// });
-
-// implementación con MONGO DB
 
 routerProd.get('/', async (req, res) => {
-	const { limit } = req.query;
+	const { limit, page, sort, category, status } = req.query;
+	let sortOption;
+	sort == 'asc' && (sortOption = 'price');
+	sort == 'desc' && (sortOption = '-price');
+
+	const options = {
+		limit: limit || 10,
+		page: page || 1,
+		sort: sortOption || null,
+	};
+
+	const query = {};
+	category && (query.category = category);
+	status && (query.status = status);
+
 	try {
-		const prods = await productModel.find().limit(limit);
+		const prods = await productModel.paginate(query, options);
 		res.status(200).send({ resultado: 'OK', message: prods });
 	} catch (error) {
 		res.status(400).send({ error: `Error al consultar productos: ${error}` });
