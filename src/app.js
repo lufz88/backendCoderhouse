@@ -21,7 +21,7 @@ const app = express();
 
 const PORT = 8080;
 
-let cartID;
+let cartId;
 
 // Server
 const server = app.listen(PORT, () => {
@@ -100,9 +100,13 @@ io.on('connection', socket => {
 		}
 	});
 
-	socket.on('loadCart', async cid => {
-		const cart = await cartModel.findById(cartID).populate('products.id_prod');
-		socket.emit('cartProducts', cart.products);
+	socket.on('loadCart', async () => {
+		const cart = await cartModel.findById(cartId).populate('products.id_prod');
+		if (cart) {
+			socket.emit('cartProducts', { products: cart.products, cid: cartId });
+		} else {
+			socket.emit('cartProducts', false);
+		}
 	});
 
 	socket.on('newProduct', async product => {
@@ -157,7 +161,7 @@ app.get('/static/products', (req, res) => {
 
 app.get('/static/carts/:cid', (req, res) => {
 	const { cid } = req.params;
-	cartID = cid;
+	cartId = cid;
 	res.redirect('/static/carts');
 });
 

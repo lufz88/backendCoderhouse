@@ -2,15 +2,19 @@ const socket = io();
 
 const cartContainer = document.querySelector('#cart-container');
 
-const path = window.location.pathname;
-const cid = path.slice(path.length);
-// '64ff2f437164de88610bd673';
-
 socket.emit('loadCart');
 
-socket.on('cartProducts', products => {
+socket.on('cartProducts', data => {
+	const { products, cid } = data;
 	cartContainer.innerHTML = '';
 	const title = document.createElement('h2');
+
+	if (!data) {
+		title.innerText = 'No seleccionaste ningún carrito';
+		cartContainer.appendChild(title);
+		return;
+	}
+
 	title.innerText = `ID: ${cid}`;
 	cartContainer.appendChild(title);
 	products.forEach(prod => {
