@@ -1,9 +1,13 @@
+import 'dotenv/config';
+
 import express from 'express';
+import session from 'express-session';
 import { engine } from 'express-handlebars';
 import { Server } from 'socket.io';
 import { __dirname } from './path.js';
 import path from 'path';
 import mongoose from 'mongoose';
+import cookieParser from 'cookie-parser';
 
 import messageModel from './models/message.models.js';
 
@@ -17,6 +21,8 @@ const app = express();
 
 const PORT = 8080;
 
+let cartID;
+
 // Server
 const server = app.listen(PORT, () => {
 	console.log(`Servidor desde puerto: ${PORT}`);
@@ -26,9 +32,25 @@ const server = app.listen(PORT, () => {
 const io = new Server(server);
 
 //Middlewares
+function auth(req, res, next) {
+	if (req.session.emial === 'admin@admin.com') {
+		return next();
+	} else {
+		res.send('No tenés acceso a este contenido');
+	}
+}
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser(process.env.SIGNED_COOKIE)); // firmo la cookie para que si se modifica la cookie no la acepte / lea
+app.use(
+	session({
+		// configuración de la sesión de mi aplicación
+		secret: process.env.SESSION_SECRET,
+		resave: true,
+		saveUninitialized: true,
+	})
+);
 app.engine('handlebars', engine()); //defino que mi motor de plantillas va a ser handlebars
 app.set('view engine', 'handlebars');
 app.set('views', path.resolve(__dirname, './views'));
@@ -36,9 +58,7 @@ app.set('views', path.resolve(__dirname, './views'));
 // conexión con base de datos
 
 mongoose
-	.connect(
-		'mongodb+srv://lufz88:wEOxuETMFjq418IT@codercluster.hjjsq0f.mongodb.net/?retryWrites=true&w=majority'
-	)
+	.connect(process.env.MONGO_URL)
 	.then(() => console.log('DB conectada'))
 	.catch(error => console.log(`Error en conexión a MongoDB Atlas:  ${error}`));
 
@@ -81,7 +101,7 @@ io.on('connection', socket => {
 	});
 
 	socket.on('loadCart', async cid => {
-		const cart = await cartModel.findById(cid);
+		const cart = await cartModel.findById(cartID).populate('products.id_prod');
 		socket.emit('cartProducts', cart.products);
 	});
 
@@ -136,9 +156,65 @@ app.get('/static/products', (req, res) => {
 });
 
 app.get('/static/carts/:cid', (req, res) => {
+	const { cid } = req.params;
+	cartID = cid;
+	res.redirect('/static/carts');
+});
+
+app.get('/static/carts', (req, res) => {
 	res.render('carts', {
 		rutaCSS: 'carts',
 		rutaJS: 'carts',
+	});
+});
+
+// Cookies
+
+app.get('/setCookie', (req, res) => {
+	//crear / setear la cookie
+	// se puede hacer un archivo de tutas
+	res.cookie('CookieCookie', 'Esto es el valor de una cookie', { maxAge: 300000 }).send(
+		'Cookie creada'
+	);
+	// nombre de la cookie, valor de la cookie, objeto de opciones
+});
+
+app.get('/getCookie', (req, res) => {
+	// res.send(req.cookies); // consultar todas las cookies
+	res.send(req.signedCookies); // consultar solo las cookies firmadas
+});
+
+// Session
+
+app.get('/session', (req, res) => {
+	// si existe la variable counter en la sesion
+	if (req.session.counter) {
+		req.session.counter++;
+		res.send(`Has entrado ${req.session.counter} veces a mi página`);
+	} else {
+		// si no existe la creo e indico que es la primera vez que se ingresó
+		req.session.counter = 1;
+		res.send('Hola por primera vez');
+	}
+});
+
+app.get('/login', (req, res) => {
+	const { email, password } = req.body;
+
+	req.session.email = email;
+	req.session.password = password;
+	return res.send('Usuario logueado');
+});
+
+app.get('/admin', auth, (req, res) => {
+	// pasa primero por la autenticación, si me autentico, continuo con la ejecución
+	res.send('Sos admin');
+});
+
+app.get('/logout', (req, res) => {
+	// de esta forma salgo de la sesion
+	req.session.destroy(error => {
+		error ? console.log(error) : res.send('Salió de la sesión');
 	});
 });
 
