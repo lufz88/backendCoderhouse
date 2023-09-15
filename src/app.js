@@ -8,12 +8,15 @@ import { __dirname } from './path.js';
 import path from 'path';
 import mongoose from 'mongoose';
 import cookieParser from 'cookie-parser';
+import MongoStore from 'connect-mongo';
 
 import messageModel from './models/message.models.js';
 
 import routerProd from './routes/products.routes.js';
 import routerCart from './routes/carts.routes.js';
 import routerMessage from './routes/messages.routes.js';
+import routerUser from './routes/users.routes.js';
+import routerSession from './routes/sessions.routes.js';
 import productModel from './models/products.models.js';
 import cartModel from './models/carts.models.js';
 
@@ -46,6 +49,11 @@ app.use(cookieParser(process.env.SIGNED_COOKIE)); // firmo la cookie para que si
 app.use(
 	session({
 		// configuración de la sesión de mi aplicación
+		store: MongoStore.create({
+			mongoUrl: process.env.MONGO_URL,
+			mongoOptions: { useNewUrlParser: true, useUnifiedTopology: true },
+			ttl: 90, // Time to live - Cuanto va a durar la sesión - Segundos, no milisengundos
+		}),
 		secret: process.env.SESSION_SECRET,
 		resave: true,
 		saveUninitialized: true,
@@ -56,6 +64,8 @@ app.set('view engine', 'handlebars');
 app.set('views', path.resolve(__dirname, './views'));
 
 // conexión con base de datos
+
+/* no va a ser necesario porque ya se conecta antes cuando se crea la sesión*/
 
 mongoose
 	.connect(process.env.MONGO_URL)
@@ -225,3 +235,5 @@ app.get('/logout', (req, res) => {
 app.use('/api/products', routerProd); // defino que mi app va a usar lo que venga en routerProd para la ruta que defina
 app.use('/api/carts', routerCart);
 app.use('/api/messages', routerMessage);
+app.use('/api/users', routerUser);
+app.use('/api/sessions', routerSession);
