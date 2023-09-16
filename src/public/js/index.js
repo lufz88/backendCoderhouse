@@ -1,25 +1,20 @@
 const socket = io();
 
-const productsContainer = document.querySelector('#products-container');
+const form = document.querySelector('#formLogin');
 
-socket.emit('load');
+form.addEventListener('submit', event => {
+	event.preventDefault();
+	const dataForm = new FormData(event.target);
+	const userData = Object.fromEntries(dataForm);
+	socket.emit('submit login', userData);
+});
 
-socket.on('products', data => {
-	const products = data.docs;
-	productsContainer.innerHTML = '';
-	products.forEach(prod => {
-		productsContainer.innerHTML += `
-    <div class="product-container">
-      <p>Title: ${prod.title}</p>
-      <p>Description: ${prod.description}</p>
-      <p>Category: ${prod.category}</p>
-      <p>Price: ${prod.price}</p>
-      <p>Code: ${prod.code}</p>
-      <p>Stock: ${prod.stock}</p>
-      <p>Status: ${prod.status}</p>
-
-    </div>
-  
-    `;
-	});
+socket.on('login response', user => {
+	if (user) {
+		socket.emit('login exitoso', user);
+	} else {
+		Swal.fire({
+			title: 'Usuario o contraseña inválidos',
+		});
+	}
 });

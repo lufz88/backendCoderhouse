@@ -19,6 +19,7 @@ import routerUser from './routes/users.routes.js';
 import routerSession from './routes/sessions.routes.js';
 import productModel from './models/products.models.js';
 import cartModel from './models/carts.models.js';
+import userModel from './models/users.models.js';
 
 const app = express();
 
@@ -135,6 +136,22 @@ io.on('connection', socket => {
 		const messages = await messageModel.find();
 
 		socket.emit('mensajes', messages);
+	});
+
+	socket.on('submit login', async data => {
+		const { email, password } = data;
+
+		const user = await userModel.findOne({ email: email });
+		if (user) {
+			if (user.password === password) {
+				session.login = true;
+				socket.emit('login response', user);
+			} else {
+				socket.emit('login response', false);
+			}
+		} else {
+			socket.emit('login response', false);
+		}
 	});
 });
 

@@ -4,6 +4,7 @@ const productsContainer = document.querySelector('#products-container');
 const pageNumber = document.querySelector('#page-number');
 const previousButton = document.querySelector('#prev-page-button');
 const nextButton = document.querySelector('#next-page-button');
+const mensaje = document.querySelector('#bienvenida');
 
 let page;
 let cartId;
