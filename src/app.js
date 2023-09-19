@@ -1,3 +1,5 @@
+import 'dotenv/config';
+
 import express from 'express';
 import { engine } from 'express-handlebars';
 import { Server } from 'socket.io';
@@ -11,13 +13,10 @@ import routerProd from './routes/products.routes.js';
 import routerCart from './routes/carts.routes.js';
 import routerMessage from './routes/messages.routes.js';
 import productModel from './models/products.models.js';
-import { ProductManager } from './controllers/ProductManager.js';
 
 const app = express();
 
 const PORT = 8080;
-
-const productManager = new ProductManager('./src/models/products.json');
 
 // Server
 const server = app.listen(PORT, () => {
@@ -38,13 +37,9 @@ app.set('views', path.resolve(__dirname, './views'));
 // conexión con base de datos
 
 mongoose
-	.connect(
-		'mongodb+srv://lufz88:wEOxuETMFjq418IT@codercluster.hjjsq0f.mongodb.net/?retryWrites=true&w=majority'
-	)
+	.connect(process.env.MONGO_URL)
 	.then(() => console.log('DB conectada'))
 	.catch(error => console.log(`Error en conexión a MongoDB Atlas:  ${error}`));
-
-
 
 // Conexión con socket.io
 

@@ -1,35 +1,13 @@
 import { Router } from 'express';
-import { CartManager } from '../controllers/CartManager.js';
 import cartModel from '../models/carts.models.js';
 import productModel from '../models/products.models.js';
 
 const routerCart = Router();
-const cartManager = new CartManager('./src/models/carts.json', './src/models/products.json');
-
-// implementación al JSON
-
-// routerCart.get('/:cid', async (req, res) => {
-// 	const { cid } = req.params;
-// 	const products = await cartManager.getProductsFromCart(parseInt(cid));
-// 	products ? res.status(200).send(products) : res.status(404).send('Carrito no existente');
-// });
-
-// routerCart.post('/', async (req, res) => {
-// 	await cartManager.createCart();
-// 	res.status(200).send('Carrito creado correctamente');
-// });
-
-// routerCart.post('/:cid/product/:pid', async (req, res) => {
-// 	const { cid, pid } = req.params;
-// 	const confirmacion = await cartManager.addProductToCart(parseInt(cid), parseInt(pid));
-// 	confirmacion
-// 		? res.status(200).send('Producto agregado correctamente')
-// 		: res.status(404).send('Carrito o producto inexistente');
-// });
 
 // implementación con MONGODB
 
 routerCart.get('/', async (req, res) => {
+	//traer los carritos
 	const { limit } = req.query;
 	try {
 		const carts = await cartModel.find().limit(limit);
@@ -40,6 +18,7 @@ routerCart.get('/', async (req, res) => {
 });
 
 routerCart.get('/:cid', async (req, res) => {
+	// traer un carrito
 	const { cid } = req.params;
 	try {
 		const cart = await cartModel.findById(cid);
@@ -52,6 +31,7 @@ routerCart.get('/:cid', async (req, res) => {
 });
 
 routerCart.post('/', async (req, res) => {
+	//crear un carrito
 	try {
 		const respuesta = await cartModel.create({});
 		res.status(200).send({ resultado: 'OK', message: respuesta });
@@ -60,7 +40,69 @@ routerCart.post('/', async (req, res) => {
 	}
 });
 
+routerCart.put('/:cid', async (req, res) => {
+	// agregar varios productos al carrito - hacer
+	const { cid } = req.params;
+});
+
 routerCart.put('/:cid/product/:pid', async (req, res) => {
+	// agregar producto al carrito
+	const { cid, pid } = req.params;
+
+	try {
+		const cart = await cartModel.findById(cid);
+		const product = await productModel.findById(pid);
+
+		if (!product) {
+			res.status(404).send({ resultado: 'Product Not Found', message: product });
+			return false;
+		}
+
+		if (cart) {
+			const productExists = cart.products.find(prod => prod.id_prod == pid);
+			productExists
+				? productExists.quantity++
+				: cart.products.push({ id_prod: product._id, quantity: 1 });
+			await cart.save();
+			res.status(200).send({ resultado: 'OK', message: cart });
+		} else {
+			res.status(404).send({ resultado: 'Cart Not Found', message: cart });
+		}
+	} catch (error) {
+		res.status(400).send({ error: `Error al crear producto: ${error}` });
+	}
+});
+
+routerCart.put('/:cid', async (req, res) => {
+	// agregar varios producto al carrito
+	const { cid, pid } = req.params;
+
+	try {
+		const cart = await cartModel.findById(cid);
+		const product = await productModel.findById(pid);
+
+		if (!product) {
+			res.status(404).send({ resultado: 'Product Not Found', message: product });
+			return false;
+		}
+
+		if (cart) {
+			const productExists = cart.products.find(prod => prod.id_prod == pid);
+			productExists
+				? productExists.quantity++
+				: cart.products.push({ id_prod: product._id, quantity: 1 });
+			await cart.save();
+			res.status(200).send({ resultado: 'OK', message: cart });
+		} else {
+			res.status(404).send({ resultado: 'Cart Not Found', message: cart });
+		}
+	} catch (error) {
+		res.status(400).send({ error: `Error al crear producto: ${error}` });
+	}
+});
+
+routerCart.delete('/:cid/product/:pid', async (req, res) => {
+	// elimina un producto al carrito - hacer
 	const { cid, pid } = req.params;
 
 	try {
@@ -88,6 +130,7 @@ routerCart.put('/:cid/product/:pid', async (req, res) => {
 });
 
 routerCart.delete('/:cid', async (req, res) => {
+	// eliminar todos los productos del carrito - hacer
 	const { cid } = req.params;
 	try {
 		const cart = await cartModel.findByIdAndDelete(cid);
