@@ -24,8 +24,6 @@ const app = express();
 
 const PORT = 8080;
 
-const productManager = new ProductManager('./src/models/products.json');
-
 // Server
 const server = app.listen(PORT, () => {
 	console.log(`Servidor desde puerto: ${PORT}`);

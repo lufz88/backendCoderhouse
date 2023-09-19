@@ -1,16 +1,19 @@
 import { Router } from 'express';
 import userModel from '../models/users.models.js';
+import { createHash } from '../utils/bcrypt.js';
+import { create } from 'connect-mongo';
 const routerUser = Router();
 
 routerUser.post('/', async (req, res) => {
 	const { first_name, last_name, email, age, password } = req.body;
 	try {
+		const hashPassword = createHash(password);
 		const response = await userModel.create({
-			first_name,
-			last_name,
-			email,
-			age,
-			password,
+			first_name: first_name,
+			last_name: last_name,
+			email: email,
+			age: age,
+			password: hashPassword,
 		});
 		res.status(200).send({ respuesta: 'Usuario creado', message: response });
 	} catch (error) {
