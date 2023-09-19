@@ -4,12 +4,9 @@ import productModel from '../models/products.models.js';
 
 const routerProd = Router();
 
-// implementación con MONGO DB
-
 routerProd.get('/', async (req, res) => {
-	const { limit, page, sort, category, status } = req.query;
+	const { limit } = req.query;
 	try {
-		// const prods = await productModel.paginate({category: category, status: status}, {limit: limit || 10, page: page || 1, sort: sort})
 		const prods = await productModel.find().limit(limit);
 		res.status(200).send({ resultado: 'OK', message: prods });
 	} catch (error) {

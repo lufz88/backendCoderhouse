@@ -1,0 +1,28 @@
+.product-container {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	width: 400px;
+}
+
+.data-container {
+	width: auto;
+	margin-bottom: 8px;
+	border-bottom: 1px solid black;
+}
+
+.pagination {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+button {
+	width: 60px;
+	height: 40px;
+}
+
+.add-button {
+	width: 100px;
+	height: 40px;
+}

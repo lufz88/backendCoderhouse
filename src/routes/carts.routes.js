@@ -5,7 +5,6 @@ import productModel from '../models/products.models.js';
 const routerCart = Router();
 
 // implementación con MONGODB
-
 routerCart.get('/', async (req, res) => {
 	//traer los carritos
 	const { limit } = req.query;
@@ -125,7 +124,55 @@ routerCart.delete('/:cid/product/:pid', async (req, res) => {
 			res.status(404).send({ resultado: 'Cart Not Found', message: cart });
 		}
 	} catch (error) {
-		res.status(400).send({ error: `Error al crear producto: ${error}` });
+		res.status(400).send({ error: `Error al agregar producto: ${error}` });
+	}
+});
+
+routerCart.put('/:cid/products/:pid', async (req, res) => {
+	const { cid, pid } = req.params;
+	const { quantity } = req.body;
+
+	try {
+		const cart = await cartModel.findById(cid);
+
+		if (cart) {
+			const productExists = cart.products.find(prod => prod.id_prod == pid);
+			if (productExists) {
+				productExists.quantity += quantity;
+			} else {
+				res.status(404).send({ resultado: 'Product Not Found', message: cart });
+				return;
+			}
+			await cart.save();
+			res.status(200).send({ resultado: 'OK', message: cart });
+		} else {
+			res.status(404).send({ resultado: 'Cart Not Found', message: cart });
+		}
+	} catch (error) {
+		res.status(400).send({ error: `Error al agregar productos: ${error}` });
+	}
+});
+
+routerCart.put('/:cid', async (req, res) => {
+	const { cid } = req.params;
+	const { updateProducts } = req.body;
+
+	try {
+		const cart = await cartModel.findById(cid);
+		updateProducts.forEach(prod => {
+			const productExists = cart.products.find(cartProd => cartProd.id_prod == prod.id_prod);
+			if (productExists) {
+				productExists.quantity += prod.quantity;
+			} else {
+				cart.products.push(prod);
+			}
+		});
+		await cart.save();
+		cart
+			? res.status(200).send({ resultado: 'OK', message: cart })
+			: res.status(404).send({ resultado: 'Not Found', message: cart });
+	} catch (error) {
+		res.status(400).send({ error: `Error al agregar productos: ${error}` });
 	}
 });
 
@@ -133,12 +180,37 @@ routerCart.delete('/:cid', async (req, res) => {
 	// eliminar todos los productos del carrito - hacer
 	const { cid } = req.params;
 	try {
-		const cart = await cartModel.findByIdAndDelete(cid);
+		const cart = await cartModel.findByIdAndUpdate(cid, { products: [] });
 		cart
 			? res.status(200).send({ resultado: 'OK', message: cart })
 			: res.status(404).send({ resultado: 'Not Found', message: cart });
 	} catch (error) {
-		res.status(400).send({ error: `Error al eliminar carrito: ${error}` });
+		res.status(400).send({ error: `Error al vaciar el carrito: ${error}` });
+	}
+});
+
+routerCart.delete('/:cid/products/:pid', async (req, res) => {
+	const { cid, pid } = req.params;
+
+	try {
+		const cart = await cartModel.findById(cid);
+		if (cart) {
+			const productIndex = cart.products.findIndex(prod => prod.id_prod == pid);
+			let deletedProduct;
+			if (productIndex !== -1) {
+				deletedProduct = cart.products[productIndex];
+				cart.products.splice(productIndex, 1);
+			} else {
+				res.status(404).send({ resultado: 'Product Not Found', message: cart });
+				return;
+			}
+			await cart.save();
+			res.status(200).send({ resultado: 'OK', message: deletedProduct });
+		} else {
+			res.status(404).send({ resultado: 'Cart Not Found', message: cart });
+		}
+	} catch (error) {
+		res.status(400).send({ error: `Error al eliminar producto: ${error}` });
 	}
 });
 

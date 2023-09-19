@@ -16,7 +16,9 @@ form.addEventListener('submit', event => {
 	socket.emit('newProduct', product);
 });
 
-socket.on('products', products => {
+socket.on('products', data => {
+	const products = data.docs;
+
 	productsContainer.innerHTML = '';
 	products.forEach(prod => {
 		productsContainer.innerHTML += `
