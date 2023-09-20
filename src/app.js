@@ -18,13 +18,10 @@ import routerMessage from './routes/messages.routes.js';
 import routerUser from './routes/users.routes.js';
 import routerSession from './routes/sessions.routes.js';
 import productModel from './models/products.models.js';
-import { ProductManager } from './controllers/ProductManager.js';
 
 const app = express();
 
 const PORT = 8080;
-
-const productManager = new ProductManager('./src/models/products.json');
 
 // Server
 const server = app.listen(PORT, () => {
