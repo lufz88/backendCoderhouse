@@ -12,13 +12,7 @@ let cartId;
 
 socket.emit('load');
 
-socket.on('products', info => {
-	const { data, user } = info;
-	mensaje.innerText = `Bienvenido ${user.first_name} ${user.last_name}
-	Email: ${user.email}
-	Rol: ${user.rol}
-	Edad: ${user.age}`;
-
+socket.on('products', data => {
 	const products = data.docs;
 	productsContainer.innerHTML = '';
 	products.forEach(prod => {
@@ -73,16 +67,14 @@ socket.on('success', cid => {
 	});
 });
 
-logoutButton.addEventListener('click', () => {
-	Swal.fire({
-		title: '¿Seguro?',
-	}).then(res => {
-		if (res) {
-			socket.emit('logout');
-		}
-	});
-});
-
-socket.on('logoutOk', () => {
-	window.location.href = '/static';
+logoutButton.addEventListener('click', async () => {
+	const res = await fetch('http://localhost:8080/api/sessions/logout');
+	const data = await res.json();
+	if (data.resultado === 'logout exitoso') {
+		Swal.fire({
+			title: 'Ha cerrado sesión',
+		}).then(() => {
+			window.location.href = '/static/home';
+		});
+	}
 });

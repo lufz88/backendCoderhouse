@@ -19,6 +19,7 @@ import routerUser from './routes/users.routes.js';
 import routerSession from './routes/sessions.routes.js';
 import productModel from './models/products.models.js';
 import userModel from './models/users.models.js';
+import routerHandlebars from './routes/handlebars.routes.js';
 
 const app = express();
 
@@ -77,10 +78,7 @@ io.on('connection', socket => {
 
 	socket.on('load', async () => {
 		const data = await productModel.paginate({}, { limit: 5 });
-		socket.emit('products', {
-			data: data,
-			user: session.user,
-		});
+		socket.emit('products', data);
 	});
 
 	socket.on('previousPage', async page => {
@@ -138,44 +136,6 @@ io.on('connection', socket => {
 		socket.emit('mensajes', messages);
 	});
 
-	socket.on('submit login', async data => {
-		const { email, password } = data;
-
-		if (email === 'adminCoder@coder.com' && password === 'adminCod3r123') {
-			session.login = true;
-
-			session.user = {
-				first_name: 'Admin',
-				last_name: 'Admin',
-				age: 45,
-				email: email,
-				rol: 'admin',
-			};
-			socket.emit('login response', session.user);
-			return;
-		}
-
-		const user = await userModel.findOne({ email: email });
-		if (user) {
-			if (user.password === password) {
-				session.login = true;
-
-				session.user = {
-					first_name: user.first_name,
-					last_name: user.last_name,
-					age: user.age,
-					email: user.email,
-					rol: user.rol,
-				};
-				socket.emit('login response', user);
-			} else {
-				socket.emit('login response', false);
-			}
-		} else {
-			socket.emit('login response', false);
-		}
-	});
-
 	socket.on('submit register', async user => {
 		const { email } = user;
 		const userExists = await userModel.findOne({ email: email });
@@ -200,54 +160,7 @@ io.on('connection', socket => {
 
 // Routes
 app.use('/static', express.static(path.join(__dirname, 'public')));
-
-app.get('/static', (req, res) => {
-	res.render('index', {
-		rutaCSS: 'index',
-		rutaJS: 'index',
-	});
-});
-
-app.get('/static/realtimeproducts', (req, res) => {
-	res.render('realTimeProducts', {
-		rutaCSS: 'realTimeProducts',
-		rutaJS: 'realTimeProducts',
-	});
-});
-
-app.get('/static/chat', (req, res) => {
-	res.render('chat', {
-		rutaCSS: 'chat',
-		rutaJS: 'chat',
-	});
-});
-
-app.get('/static/products', (req, res) => {
-	res.render('products', {
-		rutaCSS: 'products',
-		rutaJS: 'products',
-	});
-});
-
-app.get('/static/carts/:cid', (req, res) => {
-	const { cid } = req.params;
-	cartId = cid;
-	res.redirect('/static/carts');
-});
-
-app.get('/static/carts', (req, res) => {
-	res.render('carts', {
-		rutaCSS: 'carts',
-		rutaJS: 'carts',
-	});
-});
-
-app.get('/static/register', (req, res) => {
-	res.render('register', {
-		rutaCSS: 'register',
-		rutaJS: 'register',
-	});
-});
+app.use('/static', routerHandlebars);
 
 // Cookies
 

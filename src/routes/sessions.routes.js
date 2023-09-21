@@ -13,11 +13,32 @@ routerSession.post('/login', async (req, res) => {
 			return;
 		}
 
+		if (email === 'adminCoder@coder.com' && password === 'adminCod3r123') {
+			req.session.login = true;
+
+			req.session.user = {
+				first_name: 'Admin',
+				last_name: 'Admin',
+				age: 45,
+				email: email,
+				rol: 'admin',
+			};
+			res.redirect('../../static/products');
+			return;
+		}
+
 		const user = await userModel.findOne({ email: email });
 		if (user) {
 			if (user.password === password) {
 				req.session.login = true;
-				res.status(200).send({ resultado: 'Login válido', message: user });
+				req.session.user = {
+					first_name: user.first_name,
+					last_name: user.last_name,
+					age: user.age,
+					email: user.email,
+					rol: user.rol,
+				};
+				res.redirect('../../static/products');
 			} else {
 				res.status(400).send({
 					resultado: 'Login inválido',
@@ -34,10 +55,10 @@ routerSession.post('/login', async (req, res) => {
 
 routerSession.get('/logout', (req, res) => {
 	if (req.session.login) {
-		console.log('el pepe');
 		// eliminar la sesion
 		req.session.destroy();
 	}
+	res.status(200).send({ resultado: 'logout exitoso' });
 });
 
 export default routerSession;
