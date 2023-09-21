@@ -19,6 +19,10 @@ routerSession.post('/login', async (req, res) => {
 				req.session.login = true;
 				res.status(200).send({ resultado: 'Login válido', message: user });
 			} else {
+				res.status(400).send({
+					resultado: 'Login inválido',
+					message: 'Mail o contraseña incorrectos',
+				});
 			}
 		} else {
 			res.status(404).send({ resultado: 'Not Found', message: user });
@@ -30,11 +34,10 @@ routerSession.post('/login', async (req, res) => {
 
 routerSession.get('/logout', (req, res) => {
 	if (req.session.login) {
+		console.log('el pepe');
 		// eliminar la sesion
 		req.session.destroy();
 	}
-
-	res.status(200).send({ resultado: 'Login eliminado', message: 'Logout' });
 });
 
 export default routerSession;

@@ -5,13 +5,20 @@ const pageNumber = document.querySelector('#page-number');
 const previousButton = document.querySelector('#prev-page-button');
 const nextButton = document.querySelector('#next-page-button');
 const mensaje = document.querySelector('#bienvenida');
+const logoutButton = document.querySelector('#logout-button');
 
 let page;
 let cartId;
 
 socket.emit('load');
 
-socket.on('products', data => {
+socket.on('products', info => {
+	const { data, user } = info;
+	mensaje.innerText = `Bienvenido ${user.first_name} ${user.last_name}
+	Email: ${user.email}
+	Rol: ${user.rol}
+	Edad: ${user.age}`;
+
 	const products = data.docs;
 	productsContainer.innerHTML = '';
 	products.forEach(prod => {
@@ -64,4 +71,18 @@ socket.on('success', cid => {
 	Swal.fire({
 		title: 'Producto agregado',
 	});
+});
+
+logoutButton.addEventListener('click', () => {
+	Swal.fire({
+		title: '¿Seguro?',
+	}).then(res => {
+		if (res) {
+			socket.emit('logout');
+		}
+	});
+});
+
+socket.on('logoutOk', () => {
+	window.location.href = '/static';
 });

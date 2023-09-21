@@ -18,6 +18,7 @@ import routerMessage from './routes/messages.routes.js';
 import routerUser from './routes/users.routes.js';
 import routerSession from './routes/sessions.routes.js';
 import productModel from './models/products.models.js';
+import userModel from './models/users.models.js';
 
 const app = express();
 
@@ -76,7 +77,10 @@ io.on('connection', socket => {
 
 	socket.on('load', async () => {
 		const data = await productModel.paginate({}, { limit: 5 });
-		socket.emit('products', data);
+		socket.emit('products', {
+			data: data,
+			user: session.user,
+		});
 	});
 
 	socket.on('previousPage', async page => {
@@ -137,16 +141,59 @@ io.on('connection', socket => {
 	socket.on('submit login', async data => {
 		const { email, password } = data;
 
+		if (email === 'adminCoder@coder.com' && password === 'adminCod3r123') {
+			session.login = true;
+
+			session.user = {
+				first_name: 'Admin',
+				last_name: 'Admin',
+				age: 45,
+				email: email,
+				rol: 'admin',
+			};
+			socket.emit('login response', session.user);
+			return;
+		}
+
 		const user = await userModel.findOne({ email: email });
 		if (user) {
 			if (user.password === password) {
 				session.login = true;
+
+				session.user = {
+					first_name: user.first_name,
+					last_name: user.last_name,
+					age: user.age,
+					email: user.email,
+					rol: user.rol,
+				};
 				socket.emit('login response', user);
 			} else {
 				socket.emit('login response', false);
 			}
 		} else {
 			socket.emit('login response', false);
+		}
+	});
+
+	socket.on('submit register', async user => {
+		const { email } = user;
+		const userExists = await userModel.findOne({ email: email });
+
+		if (!userExists) {
+			await userModel.create(user);
+			socket.emit('register response', true);
+		} else {
+			socket.emit('register response', false);
+		}
+	});
+
+	socket.on('logout', () => {
+		console.log(session.login);
+		if (session.login) {
+			console.log(session);
+			session.destroy();
+			socket.emit('logoutOk');
 		}
 	});
 });
@@ -195,6 +242,13 @@ app.get('/static/carts', (req, res) => {
 	});
 });
 
+app.get('/static/register', (req, res) => {
+	res.render('register', {
+		rutaCSS: 'register',
+		rutaJS: 'register',
+	});
+});
+
 // Cookies
 
 app.get('/setCookie', (req, res) => {
@@ -211,39 +265,39 @@ app.get('/getCookie', (req, res) => {
 	res.send(req.signedCookies); // consultar solo las cookies firmadas
 });
 
-// Session
+// // Session
 
-app.get('/session', (req, res) => {
-	// si existe la variable counter en la sesion
-	if (req.session.counter) {
-		req.session.counter++;
-		res.send(`Has entrado ${req.session.counter} veces a mi página`);
-	} else {
-		// si no existe la creo e indico que es la primera vez que se ingresó
-		req.session.counter = 1;
-		res.send('Hola por primera vez');
-	}
-});
+// app.get('/session', (req, res) => {
+// 	// si existe la variable counter en la sesion
+// 	if (req.session.counter) {
+// 		req.session.counter++;
+// 		res.send(`Has entrado ${req.session.counter} veces a mi página`);
+// 	} else {
+// 		// si no existe la creo e indico que es la primera vez que se ingresó
+// 		req.session.counter = 1;
+// 		res.send('Hola por primera vez');
+// 	}
+// });
 
-app.get('/login', (req, res) => {
-	const { email, password } = req.body;
+// app.get('/login', (req, res) => {
+// 	const { email, password } = req.body;
 
-	req.session.email = email;
-	req.session.password = password;
-	return res.send('Usuario logueado');
-});
+// 	req.session.email = email;
+// 	req.session.password = password;
+// 	return res.send('Usuario logueado');
+// });
 
-app.get('/admin', auth, (req, res) => {
-	// pasa primero por la autenticación, si me autentico, continuo con la ejecución
-	res.send('Sos admin');
-});
+// app.get('/admin', auth, (req, res) => {
+// 	// pasa primero por la autenticación, si me autentico, continuo con la ejecución
+// 	res.send('Sos admin');
+// });
 
-app.get('/logout', (req, res) => {
-	// de esta forma salgo de la sesion
-	req.session.destroy(error => {
-		error ? console.log(error) : res.send('Salió de la sesión');
-	});
-});
+// app.get('/logout', (req, res) => {
+// 	// de esta forma salgo de la sesion
+// 	req.session.destroy(error => {
+// 		error ? console.log(error) : res.send('Salió de la sesión');
+// 	});
+// });
 
 app.use('/api/products', routerProd); // defino que mi app va a usar lo que venga en routerProd para la ruta que defina
 app.use('/api/carts', routerCart);
