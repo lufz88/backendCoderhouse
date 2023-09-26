@@ -38,7 +38,7 @@ routerSession.get('/githubSession', passport.authenticate('github'), async (req,
 });
 
 routerSession.get('/logout', (req, res) => {
-	if (req.session.login) {
+	if (req.session) {
 		// eliminar la sesion
 		req.session.destroy();
 	}

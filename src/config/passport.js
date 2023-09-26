@@ -9,35 +9,7 @@ const LocalStrategy = local.Strategy;
 
 const initializePassport = () => {
 	localRegister();
-	passport.use(
-		'github',
-		new GithubStrategy(
-			{
-				clientID: process.env.CLIENT_ID,
-				clientSecret: process.env.CLIENT_SECRET,
-				callbackURL: process.env.CALLBACK_URL,
-			},
-			async (accessToken, refreshToken, profile, done) => {
-				try {
-					const user = await userModel.findOne({ email: profile._json.email });
-					if (user) {
-						done(null, false);
-					} else {
-						const userCreated = await userModel.create({
-							first_name: profile._json.name,
-							last_name: ' ', // vació porque en github no hay last_name
-							email: profile._json.email,
-							age: 18, // edad por defecto
-							password: 'password', // generar contraseña sencilla y que se la cambie cuando ingresa
-						});
-						done(null, userCreated);
-					}
-				} catch (error) {
-					done(error);
-				}
-			}
-		)
-	);
+	githubRegister();
 	initializeSession();
 	removeSession();
 	localLogin();
@@ -104,6 +76,38 @@ const localLogin = () => {
 	);
 };
 
+const githubRegister = () => {
+	passport.use(
+		'github',
+		new GithubStrategy(
+			{
+				clientID: process.env.CLIENT_ID,
+				clientSecret: process.env.CLIENT_SECRET,
+				callbackURL: process.env.CALLBACK_URL,
+			},
+			async (accessToken, refreshToken, profile, done) => {
+				try {
+					const user = await userModel.findOne({ email: profile._json.email });
+					if (user) {
+						done(null, false);
+					} else {
+						const userCreated = await userModel.create({
+							first_name: profile._json.name,
+							last_name: ' ', // vació porque en github no hay last_name
+							email: profile._json.email,
+							age: 18, // edad por defecto
+							password: 'password', // generar contraseña sencilla y que se la cambie cuando ingresa
+						});
+						done(null, userCreated);
+					}
+				} catch (error) {
+					done(error);
+				}
+			}
+		)
+	);
+};
+
 const removeSession = () => {
 	//Eliminar la sesion del usuario
 
@@ -112,6 +116,7 @@ const removeSession = () => {
 		done(null, user);
 	});
 };
+
 const initializeSession = () => {
 	// iniciar la sesión del usuario
 
