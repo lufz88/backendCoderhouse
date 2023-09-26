@@ -1,5 +1,4 @@
 import { Router } from 'express';
-import productModel from '../models/products.models.js';
 
 const routerHandlebars = Router();
 

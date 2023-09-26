@@ -1,29 +1,18 @@
 import { Router } from 'express';
 import userModel from '../models/users.models.js';
+import passport from 'passport';
+
 const routerUser = Router();
 
-routerUser.post('/', async (req, res) => {
-	const { first_name, last_name, email, age, password } = req.body;
+routerUser.post('/', passport.authenticate('register'), async (req, res) => {
 	try {
-		const userExists = await userModel.findOne({ email: email });
-
-		if (!userExists) {
-			const response = await userModel.create({
-				first_name,
-				last_name,
-				email,
-				age,
-				password,
-			});
-			res.status(200).send({ respuesta: 'Usuario creado', message: response });
-		} else {
-			res.status(400).send({
-				respuesta: `Error al crear usuario`,
-				message: 'Usuario existente',
-			});
+		if (!req.user) {
+			return res.status(400).send({ mensaje: 'Usuario existente' });
 		}
+
+		return res.status(200).send({ mensaje: 'Usuario creado' });
 	} catch (error) {
-		res.status(400).send({ error: `Error al crear usuario: ${error}` });
+		res.status(500).send({ mensaje: `Error al crear el usuario ${error}` });
 	}
 });
 

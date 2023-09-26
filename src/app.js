@@ -9,6 +9,8 @@ import path from 'path';
 import mongoose from 'mongoose';
 import cookieParser from 'cookie-parser';
 import MongoStore from 'connect-mongo';
+import passport from 'passport';
+import initializePassport from './config/passport.js';
 
 import messageModel from './models/message.models.js';
 
@@ -61,6 +63,11 @@ app.use(
 app.engine('handlebars', engine()); //defino que mi motor de plantillas va a ser handlebars
 app.set('view engine', 'handlebars');
 app.set('views', path.resolve(__dirname, './views'));
+
+//passport
+initializePassport();
+app.use(passport.initialize());
+app.use(passport.session());
 
 // conexión con base de datos
 
@@ -163,54 +170,6 @@ app.use('/static', express.static(path.join(__dirname, 'public')));
 app.use('/static', routerHandlebars);
 
 // Cookies
-
-app.get('/setCookie', (req, res) => {
-	//crear / setear la cookie
-	// se puede hacer un archivo de tutas
-	res.cookie('CookieCookie', 'Esto es el valor de una cookie', { maxAge: 300000 }).send(
-		'Cookie creada'
-	);
-	// nombre de la cookie, valor de la cookie, objeto de opciones
-});
-
-app.get('/getCookie', (req, res) => {
-	// res.send(req.cookies); // consultar todas las cookies
-	res.send(req.signedCookies); // consultar solo las cookies firmadas
-});
-
-// // Session
-
-// app.get('/session', (req, res) => {
-// 	// si existe la variable counter en la sesion
-// 	if (req.session.counter) {
-// 		req.session.counter++;
-// 		res.send(`Has entrado ${req.session.counter} veces a mi página`);
-// 	} else {
-// 		// si no existe la creo e indico que es la primera vez que se ingresó
-// 		req.session.counter = 1;
-// 		res.send('Hola por primera vez');
-// 	}
-// });
-
-// app.get('/login', (req, res) => {
-// 	const { email, password } = req.body;
-
-// 	req.session.email = email;
-// 	req.session.password = password;
-// 	return res.send('Usuario logueado');
-// });
-
-// app.get('/admin', auth, (req, res) => {
-// 	// pasa primero por la autenticación, si me autentico, continuo con la ejecución
-// 	res.send('Sos admin');
-// });
-
-// app.get('/logout', (req, res) => {
-// 	// de esta forma salgo de la sesion
-// 	req.session.destroy(error => {
-// 		error ? console.log(error) : res.send('Salió de la sesión');
-// 	});
-// });
 
 app.use('/api/products', routerProd); // defino que mi app va a usar lo que venga en routerProd para la ruta que defina
 app.use('/api/carts', routerCart);
