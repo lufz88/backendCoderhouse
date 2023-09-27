@@ -24,6 +24,10 @@ routerSession.post('/login', passport.authenticate('login'), async (req, res) =>
 	}
 });
 
+routerSession.get('/testJWT', passport.authenticate('jwt', { session: false }), (req, res) => {
+	res.status(200).send({ mensaje: req.user });
+});
+
 routerSession.get(
 	'/github',
 	passport.authenticate('github', { scope: ['user: email'] }),
