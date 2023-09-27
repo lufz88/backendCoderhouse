@@ -28,7 +28,7 @@ const localRegister = () => {
 				try {
 					const user = await userModel.findOne({ email: username });
 					if (user) {
-						return done(null, false);
+						return done(null, user);
 					}
 					const passwordHash = createHash(password);
 					const userCreated = await userModel.create({

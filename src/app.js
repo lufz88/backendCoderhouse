@@ -142,27 +142,6 @@ io.on('connection', socket => {
 
 		socket.emit('mensajes', messages);
 	});
-
-	socket.on('submit register', async user => {
-		const { email } = user;
-		const userExists = await userModel.findOne({ email: email });
-
-		if (!userExists) {
-			await userModel.create(user);
-			socket.emit('register response', true);
-		} else {
-			socket.emit('register response', false);
-		}
-	});
-
-	socket.on('logout', () => {
-		console.log(session.login);
-		if (session.login) {
-			console.log(session);
-			session.destroy();
-			socket.emit('logoutOk');
-		}
-	});
 });
 
 // Routes

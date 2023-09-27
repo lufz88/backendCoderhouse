@@ -13,10 +13,11 @@ routerSession.post('/login', passport.authenticate('login'), async (req, res) =>
 			first_name: req.user.first_name,
 			last_name: req.user.last_name,
 			age: req.user.age,
+			rol: req.user.rol,
 			email: req.user.email,
 		};
 
-		res.status(200).send({ payload: req.user });
+		return res.redirect('../../static/products');
 	} catch (error) {
 		res.status(500).send({ mensaje: `Error al iniciar sesión ${error}` });
 	}
@@ -36,7 +37,6 @@ routerSession.get('/githubSession', passport.authenticate('github'), async (req,
 });
 
 routerSession.get('/logout', (req, res) => {
-	console.log(req.session);
 	if (req.session) {
 		req.session.destroy();
 	}

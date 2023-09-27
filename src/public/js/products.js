@@ -70,7 +70,7 @@ socket.on('success', cid => {
 logoutButton.addEventListener('click', async () => {
 	const res = await fetch('http://localhost:8080/api/sessions/logout');
 	const data = await res.json();
-	if (data.resultado === 'logout exitoso') {
+	if (data.resultado === 'Login eliminado') {
 		Swal.fire({
 			title: 'Ha cerrado sesión',
 		}).then(() => {
