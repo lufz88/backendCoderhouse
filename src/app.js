@@ -10,14 +10,9 @@ import mongoose from 'mongoose';
 import cookieParser from 'cookie-parser';
 import MongoStore from 'connect-mongo';
 import initializePassport from './config/passport.js';
+import router from './routes/index.routes.js';
 
 import messageModel from './models/message.models.js';
-
-import routerProd from './routes/products.routes.js';
-import routerCart from './routes/carts.routes.js';
-import routerMessage from './routes/messages.routes.js';
-import routerUser from './routes/users.routes.js';
-import routerSession from './routes/sessions.routes.js';
 import productModel from './models/products.models.js';
 import passport from 'passport';
 
@@ -153,66 +148,4 @@ io.on('connection', socket => {
 
 // Routes
 app.use('/static', express.static(path.join(__dirname, 'public')));
-
-app.get('/static', (req, res) => {
-	res.render('index', {
-		rutaCSS: 'index',
-		rutaJS: 'index',
-	});
-});
-
-app.get('/static/realtimeproducts', (req, res) => {
-	res.render('realTimeProducts', {
-		rutaCSS: 'realTimeProducts',
-		rutaJS: 'realTimeProducts',
-	});
-});
-
-app.get('/static/chat', (req, res) => {
-	res.render('chat', {
-		rutaCSS: 'chat',
-		rutaJS: 'chat',
-	});
-});
-
-app.get('/static/products', (req, res) => {
-	res.render('products', {
-		rutaCSS: 'products',
-		rutaJS: 'products',
-	});
-});
-
-app.get('/static/carts/:cid', (req, res) => {
-	const { cid } = req.params;
-	cartId = cid;
-	res.redirect('/static/carts');
-});
-
-app.get('/static/carts', (req, res) => {
-	res.render('carts', {
-		rutaCSS: 'carts',
-		rutaJS: 'carts',
-	});
-});
-
-// Cookies
-
-app.get('/setCookie', (req, res) => {
-	//crear / setear la cookie
-	// se puede hacer un archivo de tutas
-	res.cookie('CookieCookie', 'Esto es el valor de una cookie', { maxAge: 300000 }).send(
-		'Cookie creada'
-	);
-	// nombre de la cookie, valor de la cookie, objeto de opciones
-});
-
-app.get('/getCookie', (req, res) => {
-	// res.send(req.cookies); // consultar todas las cookies
-	res.send(req.signedCookies); // consultar solo las cookies firmadas
-});
-
-app.use('/api/products', routerProd); // defino que mi app va a usar lo que venga en routerProd para la ruta que defina
-app.use('/api/carts', routerCart);
-app.use('/api/messages', routerMessage);
-app.use('/api/users', routerUser);
-app.use('/api/sessions', routerSession);
+app.use('/', router);

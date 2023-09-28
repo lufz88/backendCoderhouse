@@ -7,6 +7,7 @@ import userModel from '../models/users.models.js';
 
 // Defino la estrategia a utilizar
 const LocalStrategy = local.Strategy;
+const JWTStrategy = jwt.Strategy;
 
 const initializePassport = () => {
 	const cookieExtractor = req => {
