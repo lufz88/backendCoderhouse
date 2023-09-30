@@ -5,9 +5,9 @@ import productModel from '../models/products.models.js';
 const routerProd = Router();
 
 routerProd.get('/', async (req, res) => {
-	const { limit } = req.query;
+	const { limit, page } = req.query;
 	try {
-		const prods = await productModel.find().limit(limit);
+		const prods = await productModel.paginate({}, { limit: 5 || limit, page: page });
 		res.status(200).send({ resultado: 'OK', message: prods });
 	} catch (error) {
 		res.status(400).send({ error: `Error al consultar productos: ${error}` });

@@ -1,5 +1,3 @@
-const socket = io();
-
 const productsContainer = document.querySelector('#products-container');
 const pageNumber = document.querySelector('#page-number');
 const previousButton = document.querySelector('#prev-page-button');
@@ -7,12 +5,18 @@ const nextButton = document.querySelector('#next-page-button');
 const mensaje = document.querySelector('#bienvenida');
 const logoutButton = document.querySelector('#logout-button');
 
-let page;
+let page = 1;
 let cartId;
 
-socket.emit('load');
+async function getProducts(URL, page) {
+	let urlFetch = URL;
 
-socket.on('products', data => {
+	if (page) {
+		urlFetch += `?page=${page}`;
+	}
+
+	const res = await (await fetch(urlFetch)).json();
+	const data = await res.message;
 	const products = data.docs;
 	productsContainer.innerHTML = '';
 	products.forEach(prod => {
@@ -42,29 +46,51 @@ socket.on('products', data => {
 
 	const addButtons = document.querySelectorAll('.add-button');
 	addButtons.forEach(button => {
-		button.addEventListener('click', e => {
+		button.addEventListener('click', async e => {
 			const pid = e.target.id;
-			const data = { pid, cartId };
-			socket.emit('addProduct', data);
+
+			try {
+				if (cartId) {
+					addProduct(cartId, pid);
+				} else {
+					const res = await fetch('http://localhost:8080/api/carts', {
+						method: 'POST',
+						body: JSON.stringify({}),
+					});
+					const data = await res.json();
+					cartId = data.message._id;
+					addProduct(cartId, pid);
+					console.log(data);
+				}
+				Swal.fire({
+					title: 'Producto agregado',
+				});
+			} catch (error) {
+				Swal.fire({
+					title: `Error al agregar producto: ${error}`,
+				});
+			}
 		});
 	});
-});
+}
 
-previousButton.addEventListener('click', () => {
-	page--;
-	socket.emit('previousPage', page);
-});
-
-nextButton.addEventListener('click', () => {
-	page++;
-	socket.emit('nextPage', page);
-});
-
-socket.on('success', cid => {
-	cartId = cid;
-	Swal.fire({
-		title: 'Producto agregado',
+async function addProduct(cartId, pid) {
+	const res = await fetch(`http://localhost:8080/api/carts/${cartId}/product/${pid}`, {
+		method: 'PUT',
+		body: JSON.stringify({}),
 	});
+	const data = await res.json();
+	console.log(data);
+}
+
+previousButton.addEventListener('click', async () => {
+	page--;
+	await getProducts('http://localhost:8080/api/products', page);
+});
+
+nextButton.addEventListener('click', async () => {
+	page++;
+	await getProducts('http://localhost:8080/api/products', page);
 });
 
 logoutButton.addEventListener('click', async () => {
@@ -78,3 +104,5 @@ logoutButton.addEventListener('click', async () => {
 		});
 	}
 });
+
+getProducts('http://localhost:8080/api/products', page);
