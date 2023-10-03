@@ -23,13 +23,15 @@ export const passportError = strategy => {
 };
 
 // Ingreso un rol y verifico si mi usuario lo cumple (ej: ingreso admin y veo si lo es o no)
+// Hay rutas propias para los usuarios, rutas propias para los admins, etc
 export const authorization = rol => {
 	return async (req, res, next) => {
+		// Se vuelve a consultar si el usuario existe dado que el token puede expirar, el usuario puede borrar el historial o se rompe la compu ja!
 		if (!req.user) {
 			return res.status(401).send({ error: 'User no autorizado' });
 		}
 
-		if (req.user.user[0].rol != rol) {
+		if (req.user.user.rol != rol) {
 			return res.status(403).send({ error: 'User no tiene los privilegios necesarios' });
 		}
 

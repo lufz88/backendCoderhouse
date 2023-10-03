@@ -1,7 +1,6 @@
 import { Router } from 'express';
-import userModel from '../models/users.models.js';
-import { validatePassword } from '../utils/bcrypt.js';
 import passport from 'passport';
+import { passportError, authorization } from '../utils/messageErrors';
 
 const routerSession = Router();
 
@@ -12,10 +11,10 @@ routerSession.post('/login', passport.authenticate('login'), async (req, res) =>
 		}
 
 		req.session.user = {
-			first_name: req.user.first_name,
-			last_name: req.user.last_name,
-			age: req.user.age,
-			email: req.user.email,
+			first_name: req.user.user.first_name,
+			last_name: req.user.user.last_name,
+			age: req.user.user.age,
+			email: req.user.user.email,
 		};
 
 		res.status(200).send({ payload: req.user });
@@ -24,8 +23,19 @@ routerSession.post('/login', passport.authenticate('login'), async (req, res) =>
 	}
 });
 
+// a esta ruta solo podrán acceder admins
+routerSession.get('/current', passportError('jwt'), authorization('admin'), (req, res) => {
+	res.send(req.user);
+});
+
 routerSession.get('/testJWT', passport.authenticate('jwt', { session: false }), (req, res) => {
 	res.status(200).send({ mensaje: req.user });
+	req.session.user = {
+		first_name: req.user.first_name,
+		last_name: req.user.last_name,
+		age: req.user.age,
+		email: req.user.email,
+	};
 });
 
 routerSession.get(

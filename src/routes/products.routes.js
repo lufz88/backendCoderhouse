@@ -1,10 +1,11 @@
 // .routes.js lo unico que hace es que cambia el icono a un icono de rutas
 import { Router } from 'express';
 import productModel from '../models/products.models.js';
+import { passportError, authorization } from '../utils/messageErrors.js';
 
 const routerProd = Router();
 
-routerProd.get('/', async (req, res) => {
+routerProd.get('/', passportError('jwt'), async (req, res) => {
 	const { limit } = req.query;
 	try {
 		const prods = await productModel.find().limit(limit);
@@ -14,7 +15,7 @@ routerProd.get('/', async (req, res) => {
 	}
 });
 
-routerProd.get('/:pid', async (req, res) => {
+routerProd.get('/:pid', passportError('jwt'), async (req, res) => {
 	const { pid } = req.params;
 	try {
 		const prod = await productModel.findById(pid);
@@ -26,7 +27,7 @@ routerProd.get('/:pid', async (req, res) => {
 	}
 });
 
-routerProd.post('/', async (req, res) => {
+routerProd.post('/', passportError('jwt'), authorization('admin'), async (req, res) => {
 	const { title, description, stock, code, price, category } = req.body;
 
 	try {
@@ -44,7 +45,7 @@ routerProd.post('/', async (req, res) => {
 	}
 });
 
-routerProd.put('/:pid', async (req, res) => {
+routerProd.put('/:pid', passportError('jwt'), authorization('admin'), async (req, res) => {
 	const { pid } = req.params;
 	const { title, description, stock, code, price, category, status } = req.body;
 	try {
@@ -64,7 +65,7 @@ routerProd.put('/:pid', async (req, res) => {
 	}
 });
 
-routerProd.delete('/:pid', async (req, res) => {
+routerProd.delete('/:pid', passportError('jwt'), authorization('admin'), async (req, res) => {
 	const { pid } = req.params;
 	try {
 		const prod = await productModel.findByIdAndDelete(pid);
