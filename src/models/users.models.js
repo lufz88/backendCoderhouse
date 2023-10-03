@@ -18,6 +18,10 @@ const userSchemna = new Schema({
 		type: String,
 		default: 'user',
 	},
+	cart: {
+		type: Schema.Types.ObjectId,
+		ref: 'carts',
+	},
 	age: {
 		type: Number,
 		required: true,

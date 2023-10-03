@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import passport from 'passport';
 import { passportError, authorization } from '../utils/messageErrors';
+import { generateToken } from '../utils/jwt';
 
 const routerSession = Router();
 
@@ -11,12 +12,16 @@ routerSession.post('/login', passport.authenticate('login'), async (req, res) =>
 		}
 
 		req.session.user = {
-			first_name: req.user.user.first_name,
-			last_name: req.user.user.last_name,
-			age: req.user.user.age,
-			email: req.user.user.email,
+			first_name: req.user.first_name,
+			last_name: req.user.last_name,
+			age: req.user.age,
+			email: req.user.email,
 		};
-
+		const token = generateToken(req.user); // se genera el token con el usuario
+		res.cookie('jwtCookie', token, {
+			// se envia el token a las cookies
+			maxAge: 43200000, // seteamos que dure 12 hs en milisegundos
+		});
 		res.status(200).send({ payload: req.user });
 	} catch (error) {
 		res.status(500).send({ mensaje: `Error al iniciar sesión ${error}` });
@@ -24,18 +29,8 @@ routerSession.post('/login', passport.authenticate('login'), async (req, res) =>
 });
 
 // a esta ruta solo podrán acceder admins
-routerSession.get('/current', passportError('jwt'), authorization('admin'), (req, res) => {
+routerSession.get('/current', passportError('jwt'), (req, res) => {
 	res.send(req.user);
-});
-
-routerSession.get('/testJWT', passport.authenticate('jwt', { session: false }), (req, res) => {
-	res.status(200).send({ mensaje: req.user });
-	req.session.user = {
-		first_name: req.user.first_name,
-		last_name: req.user.last_name,
-		age: req.user.age,
-		email: req.user.email,
-	};
 });
 
 routerSession.get(
@@ -56,33 +51,8 @@ routerSession.get('/logout', (req, res) => {
 		// eliminar la sesion
 		req.session.destroy();
 	}
-
+	res.clearCookie('jwtCookie'); // eliminamos el token de la cookie
 	res.status(200).send({ resultado: 'Login eliminado', message: 'Logout' });
 });
 
 export default routerSession;
-
-/* 
-const { email, password } = req.body;
-
-	try {
-		if (req.session.login) {
-			// si ya hay una sesion activa, que se loguee
-			res.status(200).send({ resultado: 'Login ya existente', message: email });
-			return;
-		}
-
-		const user = await userModel.findOne({ email: email });
-		if (user) {
-			if (validatePassword(password, user.password)) {
-				req.session.login = true;
-				res.status(200).send({ resultado: 'Login válido', message: user });
-			} else {
-			}
-		} else {
-			res.status(404).send({ resultado: 'Not Found', message: user });
-		}
-	} catch (error) {
-		res.status(400).send({ error: `Error en login ${error}` });
-	}
-*/
