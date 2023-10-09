@@ -18,6 +18,10 @@ const userSchemna = new Schema({
 		type: String,
 		default: 'user',
 	},
+	cart: {
+		type: Schema.Types.ObjectId,
+		ref: 'carts',
+	},
 	age: {
 		type: Number,
 		required: true,
@@ -26,6 +30,16 @@ const userSchemna = new Schema({
 		type: String,
 		required: true,
 	},
+});
+
+userSchemna.pre('save', async function (next) {
+	// preconfiguración para generar un nuevo carrito al crear el usuario
+	try {
+		const newCart = await cartModel.create({});
+		this.cart = newCart._id;
+	} catch (error) {
+		next(error);
+	}
 });
 
 const userModel = model('users', userSchemna);

@@ -1,17 +1,20 @@
 import local from 'passport-local'; // Estrategia
 import passport from 'passport'; // Manejador de las estrategias
 import GithubStrategy from 'passport-github2';
+import jwt, { ExtractJwt } from 'passport-jwt';
 import { createHash, validatePassword } from '../utils/bcrypt.js';
 import userModel from '../models/users.models.js';
 
 const LocalStrategy = local.Strategy;
+const JWTStrategy = jwt.Strategy;
 
 const initializePassport = () => {
+	jwtLogin();
 	localRegister();
+	localLogin();
 	githubRegister();
 	initializeSession();
 	removeSession();
-	localLogin();
 };
 
 const localRegister = () => {
@@ -85,7 +88,7 @@ const githubRegister = () => {
 				try {
 					const user = await userModel.findOne({ email: profile._json.email });
 					if (user) {
-						done(null, false);
+						done(null, user);
 					} else {
 						const userCreated = await userModel.create({
 							first_name: profile._json.name,
@@ -98,6 +101,31 @@ const githubRegister = () => {
 					}
 				} catch (error) {
 					done(error);
+				}
+			}
+		)
+	);
+};
+
+const jwtLogin = () => {
+	const cookieExtractor = req => {
+		const token = req.cookies ? req.cookies.jwtCookie : {};
+		console.log(token);
+		return token;
+	};
+
+	passport.use(
+		'jwt',
+		new JWTStrategy(
+			{
+				jwtFromRequest: ExtractJwt.fromExtractors([cookieExtractor]), // consulto el token de las cookies
+				secretOrKey: process.env.JWT_SECRET,
+			},
+			async (jwt_payload, done) => {
+				try {
+					return done(error, jwt_payload);
+				} catch (error) {
+					return done(error);
 				}
 			}
 		)

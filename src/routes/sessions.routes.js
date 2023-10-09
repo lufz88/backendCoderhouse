@@ -1,5 +1,7 @@
 import { Router } from 'express';
 import passport from 'passport';
+import { passportError } from '../utils/messageErrors.js';
+import { generateToken } from '../utils/jwt.js';
 
 const routerSession = Router();
 
@@ -17,10 +19,20 @@ routerSession.post('/login', passport.authenticate('login'), async (req, res) =>
 			email: req.user.email,
 		};
 
+		const token = generateToken(req.user); // se genera el token con el usuario
+		res.cookie('jwtCookie', token, {
+			// se envia el token a las cookies
+			maxAge: 43200000, // seteamos que dure 12 hs en milisegundos
+		});
+
 		return res.redirect('../../static/products');
 	} catch (error) {
 		res.status(500).send({ mensaje: `Error al iniciar sesión ${error}` });
 	}
+});
+
+routerSession.get('/current', passportError('jwt'), (req, res) => {
+	res.status(200).send(req.user);
 });
 
 routerSession.get(
@@ -40,7 +52,7 @@ routerSession.get('/logout', (req, res) => {
 	if (req.session) {
 		req.session.destroy();
 	}
-
+	res.clearCookie('jwtCookie');
 	res.status(200).send({ resultado: 'Login eliminado', message: 'Logout' });
 });
 

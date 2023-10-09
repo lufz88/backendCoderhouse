@@ -11,16 +11,10 @@ import cookieParser from 'cookie-parser';
 import MongoStore from 'connect-mongo';
 import passport from 'passport';
 import initializePassport from './config/passport.js';
+import router from './routes/index.routes.js';
 
 import messageModel from './models/message.models.js';
-
-import routerProd from './routes/products.routes.js';
-import routerCart from './routes/carts.routes.js';
-import routerMessage from './routes/messages.routes.js';
-import routerUser from './routes/users.routes.js';
-import routerSession from './routes/sessions.routes.js';
 import productModel from './models/products.models.js';
-import userModel from './models/users.models.js';
 import routerHandlebars from './routes/handlebars.routes.js';
 
 const app = express();
@@ -120,10 +114,4 @@ io.on('connection', socket => {
 app.use('/static', express.static(path.join(__dirname, 'public')));
 app.use('/static', routerHandlebars);
 
-// Cookies
-
-app.use('/api/products', routerProd); // defino que mi app va a usar lo que venga en routerProd para la ruta que defina
-app.use('/api/carts', routerCart);
-app.use('/api/messages', routerMessage);
-app.use('/api/users', routerUser);
-app.use('/api/sessions', routerSession);
+app.use('/', router);
