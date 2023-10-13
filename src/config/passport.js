@@ -123,7 +123,7 @@ const jwtLogin = () => {
 			},
 			async (jwt_payload, done) => {
 				try {
-					return done(error, jwt_payload);
+					return done(null, jwt_payload);
 				} catch (error) {
 					return done(error);
 				}

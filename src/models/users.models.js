@@ -1,4 +1,5 @@
 import { Schema, model } from 'mongoose';
+import cartModel from './carts.models';
 
 const userSchemna = new Schema({
 	first_name: {
