@@ -1,6 +1,6 @@
 import productModel from '../models/products.models.js';
 
-export const getProducts = async (req, res) => {
+const getProducts = async (req, res) => {
 	const { limit, page, sort, filter } = req.query;
 
 	const pag = page ? page : 1;
@@ -8,7 +8,7 @@ export const getProducts = async (req, res) => {
 	const ord = sort === 'asc' ? 1 : 0;
 
 	try {
-		const products = await productModel.find(
+		const products = await productModel.paginate(
 			{ filter: filter },
 			{ limit: lim, page: pag, sort: { price: ord } }
 		);
@@ -23,7 +23,7 @@ export const getProducts = async (req, res) => {
 	}
 };
 
-export const getProduct = async (req, res) => {
+const getProduct = async (req, res) => {
 	const { pid } = req.params;
 
 	try {
@@ -39,7 +39,7 @@ export const getProduct = async (req, res) => {
 	}
 };
 
-export const postProduct = async (req, res) => {
+const postProduct = async (req, res) => {
 	const { title, description, code, price, stock, category } = req.body;
 
 	try {
@@ -64,7 +64,7 @@ export const postProduct = async (req, res) => {
 	}
 };
 
-export const putProduct = async (req, res) => {
+const putProduct = async (req, res) => {
 	const { pid } = req.params;
 	const { title, description, code, price, stock, category } = req.body;
 
@@ -88,12 +88,12 @@ export const putProduct = async (req, res) => {
 	}
 };
 
-export const deleteProduct = async (req, res) => {
+const deleteProduct = async (req, res) => {
 	const { pid } = req.params;
 
 	try {
 		const product = await productModel.findByIdAndDelete(pid);
-
+		n;
 		if (product) {
 			return res.status(200).send(product);
 		}
@@ -103,3 +103,13 @@ export const deleteProduct = async (req, res) => {
 		res.status(500).send({ error: `Error en actualizar producto ${error}` });
 	}
 };
+
+const productsController = {
+	getProducts,
+	getProduct,
+	postProduct,
+	putProduct,
+	deleteProduct,
+};
+
+export default productsController;

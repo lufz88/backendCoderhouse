@@ -14,9 +14,8 @@ async function getProducts(URL, page) {
 	if (page) {
 		urlFetch += `?page=${page}`;
 	}
-
-	const res = await (await fetch(urlFetch)).json();
-	const data = await res.message;
+	const res = await fetch(urlFetch);
+	const data = await res.json();
 	const products = data.docs;
 	productsContainer.innerHTML = '';
 	products.forEach(prod => {
@@ -48,7 +47,6 @@ async function getProducts(URL, page) {
 	addButtons.forEach(button => {
 		button.addEventListener('click', async e => {
 			const pid = e.target.id;
-
 			try {
 				if (cartId) {
 					addProduct(cartId, pid);
@@ -80,7 +78,6 @@ async function addProduct(cartId, pid) {
 		body: JSON.stringify({}),
 	});
 	const data = await res.json();
-	console.log(data);
 }
 
 previousButton.addEventListener('click', async () => {

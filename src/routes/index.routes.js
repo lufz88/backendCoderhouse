@@ -10,7 +10,7 @@ const router = Router();
 
 router.use('/api/products', routerProd);
 router.use('/api/messages', routerMessage);
-router.use('/api/cart', routerCart);
+router.use('/api/carts', routerCart);
 router.use('/api/users', routerUser);
 router.use('/api/sessions', routerSession);
 router.use('/static', routerHandlebars);
