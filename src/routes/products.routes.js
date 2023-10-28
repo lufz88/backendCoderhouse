@@ -1,13 +1,23 @@
-// .routes.js lo unico que hace es que cambia el icono a un icono de rutas
 import { Router } from 'express';
 import productsController from '../controllers/products.controller.js';
+import { authorization, passportError } from '../utils/messageErrors.js';
 
 const routerProd = Router();
 
 routerProd.get('/', productsController.getProducts);
 routerProd.get('/:pid', productsController.getProduct);
-routerProd.post('/', productsController.postProduct);
-routerProd.put('/:pid', productsController.putProduct);
-routerProd.delete('/:pid', productsController.deleteProduct);
+routerProd.post('/', passportError('jwt'), authorization('admin'), productsController.postProduct);
+routerProd.put(
+	'/:pid',
+	passportError('jwt'),
+	authorization('admin'),
+	productsController.putProduct
+);
+routerProd.delete(
+	'/:pid',
+	passportError('jwt'),
+	authorization('admin'),
+	productsController.deleteProduct
+);
 
 export default routerProd;

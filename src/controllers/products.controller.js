@@ -1,17 +1,19 @@
 import productModel from '../models/products.models.js';
 
 const getProducts = async (req, res) => {
-	const { limit, page, sort, filter } = req.query;
+	const { limit, page, sort, category } = req.query;
 
 	const pag = page ? page : 1;
 	const lim = limit ? limit : 10;
 	const ord = sort === 'asc' ? 1 : 0;
+	const filter = category ? { category: category } : {};
 
 	try {
-		const products = await productModel.paginate(
-			{ filter: filter },
-			{ limit: lim, page: pag, sort: { price: ord } }
-		);
+		const products = await productModel.paginate(filter, {
+			limit: lim,
+			page: pag,
+			sort: { price: ord },
+		});
 
 		if (products) {
 			return res.status(200).send(products);
