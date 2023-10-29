@@ -16,7 +16,7 @@ router.use('/api/carts', routerCart);
 router.use('/api/users', routerUser);
 router.use('/api/sessions', routerSession);
 router.use('/api/mail', routerMailing);
-router.use('/api/ticket', routerTicket);
+router.use('/api/tickets', routerTicket);
 
 router.use('/static', routerHandlebars);
 
