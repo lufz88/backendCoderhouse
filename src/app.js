@@ -11,6 +11,7 @@ import cookieParser from 'cookie-parser';
 import MongoStore from 'connect-mongo';
 import passport from 'passport';
 import initializePassport from './config/passport.js';
+
 import router from './routes/index.routes.js';
 
 import messageModel from './models/message.models.js';

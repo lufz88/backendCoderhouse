@@ -5,6 +5,7 @@ import routerProd from './products.routes.js';
 import routerUser from './users.routes.js';
 import routerSession from './sessions.routes.js';
 import routerHandlebars from './handlebars.routes.js';
+import routerMailing from './mail.routes.js';
 
 const router = Router();
 
@@ -13,6 +14,7 @@ router.use('/api/messages', routerMessage);
 router.use('/api/carts', routerCart);
 router.use('/api/users', routerUser);
 router.use('/api/sessions', routerSession);
+router.use('/api/mail', routerMailing);
 router.use('/static', routerHandlebars);
 
 export default router;
