@@ -1,9 +1,11 @@
+import 'dotenv/config';
 import local from 'passport-local'; // Estrategia
 import passport from 'passport'; // Manejador de las estrategias
 import GithubStrategy from 'passport-github2';
 import jwt, { ExtractJwt } from 'passport-jwt';
 import { createHash, validatePassword } from '../utils/bcrypt.js';
 import userModel from '../models/users.models.js';
+import cartModel from '../models/carts.models.js';
 
 const LocalStrategy = local.Strategy;
 const JWTStrategy = jwt.Strategy;
@@ -31,7 +33,7 @@ const localRegister = () => {
 				try {
 					const user = await userModel.findOne({ email: username });
 					if (user) {
-						return done(null, user);
+						return done('Usuario existente');
 					}
 					const passwordHash = createHash(password);
 					const userCreated = await userModel.create({
@@ -41,6 +43,7 @@ const localRegister = () => {
 						age: age,
 						password: passwordHash,
 					});
+					req.user = userCreated;
 					return done(null, userCreated);
 				} catch (error) {
 					return done(error);
@@ -110,7 +113,6 @@ const githubRegister = () => {
 const jwtLogin = () => {
 	const cookieExtractor = req => {
 		const token = req.cookies ? req.cookies.jwtCookie : {};
-		console.log(token);
 		return token;
 	};
 

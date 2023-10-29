@@ -4,8 +4,7 @@ const postUser = async (req, res) => {
 		if (!req.user) {
 			return res.status(400).send({ mensaje: 'Usuario existente' });
 		}
-
-		return res.redirect('../../static/home');
+		res.status(200).send({ mensaje: 'Usuario creado' });
 	} catch (error) {
 		res.status(500).send({ mensaje: `Error al crear el usuario ${error}` });
 	}

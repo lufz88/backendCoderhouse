@@ -13,7 +13,8 @@ export const generateToken = user => {
 
 export const authToken = (req, res, next) => {
 	// Consulto el header
-	const authHeader = req.headers.Autorization; // Consulto si existe el token
+
+	const authHeader = req.cookies.jwtCookie; // Consulto si existe el token
 
 	if (!authHeader) {
 		return res.status(401).send({ error: 'Usuario no autenticado' });
