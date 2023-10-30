@@ -37,14 +37,17 @@ const purchaseCart = async (req, res) => {
 			const email = user[0].email;
 			let amount = 0;
 			const purchaseItems = [];
-			cart.products.forEach(item => {
+			cart.products.forEach(async item => {
 				const product = products.find(prod => prod._id == item.id_prod.toString());
 				if (product.stock >= item.quantity) {
 					amount += product.price * item.quantity;
+					product.stock -= item.quantity;
+					await product.save();
 					purchaseItems.push(product.title);
 				}
 				//ticket?info=${amount}
 			});
+			console.log(purchaseItems);
 			await cartModel.findByIdAndUpdate(cid, { products: [] });
 			res.redirect(
 				`http://localhost:8080/api/tickets/create?amount=${amount}&email=${email}`
