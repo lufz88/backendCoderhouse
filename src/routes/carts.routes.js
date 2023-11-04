@@ -5,7 +5,12 @@ const routerCart = Router();
 
 routerCart.get('/', cartsController.getCarts);
 routerCart.get('/:cid', cartsController.getCart);
-routerCart.post('/:cid/purchase', cartsController.purchaseCart);
+routerCart.post(
+	'/:cid/purchase',
+	passportError('jwt'),
+	authorization('user'),
+	cartsController.purchaseCart
+);
 routerCart.post('/', cartsController.postCart);
 routerCart.put(
 	'/:cid/product/:pid',

@@ -6,6 +6,9 @@ import jwt, { ExtractJwt } from 'passport-jwt';
 import { createHash, validatePassword } from '../utils/bcrypt.js';
 import userModel from '../models/users.models.js';
 import cartModel from '../models/carts.models.js';
+import { generateUserErrorInfo } from '../services/errors/info.js';
+import CustomError from '../services/errors/CustomError.js';
+import EErrors from '../services/errors/enums.js';
 
 const LocalStrategy = local.Strategy;
 const JWTStrategy = jwt.Strategy;
@@ -29,6 +32,21 @@ const localRegister = () => {
 			},
 			async (req, username, password, done) => {
 				const { first_name, last_name, email, age } = req.body;
+
+				if (!first_name || !last_name || !email || !age || !password) {
+					CustomError.createError({
+						name: 'Error de creación de usuario',
+						cause: generateUserErrorInfo({
+							first_name,
+							last_name,
+							email,
+							age,
+							password,
+						}),
+						message: 'Error al crear usuario',
+						code: EErrors.MISSING_OR_INVALID_USER_DATA,
+					});
+				}
 
 				try {
 					const user = await userModel.findOne({ email: username });
