@@ -86,7 +86,7 @@ const putProduct = async (req, res) => {
 			name: 'Error de actualización de producto',
 			cause: generateProductErrorInfo({ title, description, code, price, stock, category }),
 			message: 'Error al actualizar producto',
-			code: EErrors.MISSING_OR_INVALID_DATA,
+			code: EErrors.MISSING_OR_INVALID_PRODUCT_DATA,
 		});
 	}
 
