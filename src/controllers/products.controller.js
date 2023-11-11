@@ -84,7 +84,14 @@ const putProduct = async (req, res) => {
 	if ((!title, !description, !code, !price, !stock, !category)) {
 		CustomError.createError({
 			name: 'Error de actualización de producto',
-			cause: generateProductErrorInfo({ title, description, code, price, stock, category }),
+			cause: generateProductErrorInfo({
+				title,
+				description,
+				code,
+				price,
+				stock,
+				category,
+			}),
 			message: 'Error al actualizar producto',
 			code: EErrors.MISSING_OR_INVALID_PRODUCT_DATA,
 		});

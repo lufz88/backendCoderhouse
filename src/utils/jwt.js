@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import jwt from 'jsonwebtoken';
+import { logger } from './logger.js';
 
 export const generateToken = user => {
 	/* 
@@ -23,6 +24,11 @@ export const authToken = (req, res, next) => {
 	const token = authHeader.split(' ')[1]; // Separo en dos el token y me quedo con el token en sí
 	jwt.sign(token, process.env.JWT_SECRET, (error, credentials) => {
 		if (error) {
+			logger.error(
+				`[ERROR][${new Date().tolocaleDateString()} - ${new Date().tolocaleTimeString()}] Ha ocurrido un error: ${
+					error.message
+				}`
+			);
 			return res.status(403).send({ error: 'Usuario no autorizado' });
 		}
 		//descifro el token

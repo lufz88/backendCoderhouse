@@ -17,6 +17,7 @@ import router from './routes/index.routes.js';
 import messageModel from './models/message.models.js';
 import productModel from './models/products.models.js';
 import routerHandlebars from './routes/handlebars.routes.js';
+import { addLogger } from './utils/logger.js';
 
 const app = express();
 
@@ -41,6 +42,7 @@ function auth(req, res, next) {
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(addLogger);
 app.use(cookieParser(process.env.SIGNED_COOKIE)); // firmo la cookie para que si se modifica la cookie no la acepte / lea
 app.use(
 	session({
