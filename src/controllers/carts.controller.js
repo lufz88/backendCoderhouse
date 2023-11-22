@@ -47,7 +47,9 @@ const purchaseCart = async (req, res) => {
 				}
 				//ticket?info=${amount}
 			});
-			console.log(purchaseItems);
+			if (user.rol === 'premium') {
+				amount *= 0.9;
+			}
 			await cartModel.findByIdAndUpdate(cid, { products: [] });
 			res.redirect(
 				`http://localhost:8080/api/tickets/create?amount=${amount}&email=${email}`
