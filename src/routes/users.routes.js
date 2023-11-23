@@ -8,4 +8,8 @@ routerUser.post('/', passport.authenticate('register'), usersController.postUser
 
 routerUser.get('/', usersController.getUser);
 
+routerUser.post('/recovery', usersController.recoveryPassword);
+
+routerUser.post('/resetpassword/:token', usersController.resetPassword);
+
 export default routerUser;

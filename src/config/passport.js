@@ -5,7 +5,6 @@ import GithubStrategy from 'passport-github2';
 import jwt, { ExtractJwt } from 'passport-jwt';
 import { createHash, validatePassword } from '../utils/bcrypt.js';
 import userModel from '../models/users.models.js';
-import cartModel from '../models/carts.models.js';
 import { generateUserErrorInfo } from '../services/errors/info.js';
 import CustomError from '../services/errors/CustomError.js';
 import EErrors from '../services/errors/enums.js';
