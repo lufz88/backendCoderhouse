@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import nodemailer from 'nodemailer';
 import { __dirname } from '../path.js';
+import { logger } from '../utils/logger.js';
 
 // Config mailing
 
