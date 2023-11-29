@@ -19,9 +19,29 @@ import productModel from './models/products.models.js';
 import routerHandlebars from './routes/handlebars.routes.js';
 import { addLogger } from './utils/logger.js';
 
+import swaggerJSDoc from 'swagger-jsdoc';
+import swaggerUiExpress from 'swagger-ui-express';
+
 const app = express();
 
 const PORT = 8080;
+
+// ** significa cualquier subcarpeta
+// * significa cualquier nombre de archivo
+
+const swaggerOptions = {
+	definition: {
+		openapi: '3.1.0',
+		info: {
+			title: 'Documentación del curso de Backend de Coderhouse',
+			description: 'API Backend de Coder',
+		},
+	},
+	apis: [`${__dirname}/docs/**/*.yaml`],
+};
+
+const specs = swaggerJSDoc(swaggerOptions);
+app.use('/apidocs', swaggerUiExpress.serve, swaggerUiExpress.setup(specs));
 
 // Server
 const server = app.listen(PORT, () => {

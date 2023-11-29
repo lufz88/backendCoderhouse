@@ -1,0 +1,199 @@
+paths:
+    /api/products/:
+        get:
+            summary: Obtener a todos los productos
+            tags:
+                - Products
+            responses:
+                '200':
+                    description: Productos obtenidos satisfactoriamente
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: '#/components/schemas/Product'
+                '404':
+                    description: Productos no encontrados
+                '500':
+                    description: Error interno del servidor al consultar productos
+        post:
+            summary: Crear nuevo producto
+            tags:
+                - Products
+            parameters:
+                - name: Product
+                  in: body
+                  description: El producto a crear
+                  required: true
+                  schema:
+                      type: Object
+                      $ref: '#/components/schemas/ProductToCreateOrModify'
+            responses:
+                '201':
+                    description: Producto creado satisfactoriamente
+                    content:
+                        application/json:
+                            schema:
+                                type: Object
+                                $ref: '#/components/schemas/Product'
+                '401':
+                    description: Llave duplicada. El codigo del producto ya existe
+                '500':
+                    description: Error interno del servidor al crear producto
+    /api/products/{id}:
+        get:
+            summary: Obtener un producto
+            tags:
+                - Products
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                      $type: String
+                  description: Id del producto a buscar
+            responses:
+                '200':
+                    description: Producto obtenido satisfactoriamente
+                    content:
+                        application/json:
+                            schema:
+                                type: Object
+                                $ref: '#/components/schemas/Product'
+                '404':
+                    description: Producto no encontrado
+                '500':
+                    description: Error interno del servidor al consultar producto
+        put:
+            summary: Modificar un producto
+            tags:
+                - Products
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                      $type: String
+                  description: Id del usuario a buscar
+                - name: Product
+                  in: body
+                  description: El producto a modificar
+                  required: true
+                  schema:
+                      type: Object
+                      $ref: '#/components/schemas/ProductToCreateOrModify'
+            responses:
+                '200':
+                    description: Producto modificado satisfactoriamente
+                    content:
+                        application/json:
+                            schema:
+                                type: Object
+                                $ref: '#/components/schemas/Product'
+                '404':
+                    description: Producto no encontrado
+                '500':
+                    description: Error interno del servidor al modificar producto
+        delete:
+            summary: Eliminar un producto
+            tags:
+                - Products
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                      $type: String
+                  description: Id del producto a buscar
+            responses:
+                '200':
+                    description: Producto eliminado satisfactoriamente
+                    content:
+                        application/json:
+                            schema:
+                                type: Object
+                                $ref: '#/components/schemas/Product'
+                '404':
+                    description: Producto no encontrado
+                '500':
+                    description: Error interno del servidor al consultar producto
+
+components:
+    schemas:
+        Product:
+            type: object
+            properties:
+                _id:
+                    type: ObjectId
+                    description: Id autogenerado de MongoDB
+                title:
+                    type: String
+                    description: Nombre del producto
+                description:
+                    type: String
+                    description: Descripcion del producto
+                category:
+                    type: String
+                    description: Categoria a la que pertenece el producto
+                price:
+                    type: Number
+                    description: Precio del producto
+                stock:
+                    type: Number
+                    description: Cantidad de productos disponibles
+                code:
+                    type: String
+                    description: Codigo unico del producto
+                status:
+                    type: Boolean
+                    description: Existe (true), no existe (false). -Opcional-
+                thumbnail:
+                    type: String
+                    description: Imagen miniatura del producto. -Opcional-
+            example:
+                _id: ObjectId('456489489465')
+                title: Pantalón
+                description: Pantalón de jean negro
+                category: Pantalones
+                price: 4555
+                stock: 1515
+                code: ABS545
+                status: true
+                thumbnail: ''
+        ProductToCreateOrModify:
+            type: object
+            properties:
+                title:
+                    type: String
+                    description: Nombre del producto
+                description:
+                    type: String
+                    description: Descripcion del producto
+                category:
+                    type: String
+                    description: Categoria a la que pertenece el producto
+                price:
+                    type: Number
+                    description: Precio del producto
+                stock:
+                    type: Number
+                    description: Cantidad de productos disponibles
+                code:
+                    type: String
+                    description: Codigo unico del producto
+                status:
+                    type: Boolean
+                    description: Existe (true), no existe (false). -Opcional-
+                thumbnail:
+                    type: String
+                    description: Imagen miniatura del producto. -Opcional-
+            example:
+                title: Pantalón
+                description: Pantalón de jean negro
+                category: Pantalones
+                price: 4555
+                stock: 1515
+                code: ABS545
+                status: true
+                thumbnail: ''

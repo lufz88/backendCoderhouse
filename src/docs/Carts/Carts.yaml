@@ -1,0 +1,299 @@
+paths:
+    /api/carts/:
+        get:
+            summary: Obtener todos los carritos
+            tags:
+                - Carts
+            responses:
+                '200':
+                    description: Carritos obtenidos satisfactoriamente
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: '#/components/schemas/Cart'
+                '400':
+                    description: Error al consultar carritos
+                '500':
+                    description: Error interno del servidor al consultar carritos
+        post:
+            summary: Crear un nuevo carrito
+            tags:
+                - Carts
+            responses:
+                '200':
+                    description: Carritos creado satisfactoriamente
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: '#/components/schemas/EmptyCart'
+                '404':
+                    description: Carritos no encontrados
+                '500':
+                    description: Error interno del servidor al consultar carritos
+    /api/carts/{cid}:
+        get:
+            summary: Obtener un carrito
+            tags:
+                - Carts
+            parameters:
+                - name: cid
+                  in: path
+                  required: true
+                  schema:
+                      $type: String
+                  description: Id del carrito a buscar
+            responses:
+                '200':
+                    description: Carrito obtenido satisfactoriamente
+                    content:
+                        application/json:
+                            schema:
+                                type: Object
+                                $ref: '#/components/schemas/Cart'
+                '404':
+                    description: Carrito no encontrado
+                '500':
+                    description: Error interno del servidor al consultar carrito
+        put:
+            summary: Agregar varios productos al carrito
+            tags:
+                - Carts
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                      $type: String
+                  description: Id del carrito a modificar
+                - name: Products
+                  in: body
+                  description: Productos a agregar
+                  schema:
+                      type: Array
+                      $ref: '#/components/schemas/ProductsArray'
+            responses:
+                '200':
+                    description: Productos agregados satisfactoriamente
+                    content:
+                        application/json:
+                            schema:
+                                type: Object
+                                $ref: '#/components/schemas/Cart'
+                '404':
+                    description: Carrito no encontrado
+                '500':
+                    description: Error interno del servidor al agregar productos
+        delete:
+            summary: Vaciar un carrito
+            tags:
+                - Carts
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                      $type: String
+                  description: Id del carrito a vaciar
+            responses:
+                '200':
+                    description: Carrito vaciado satisfactoriamente
+                    content:
+                        application/json:
+                            schema:
+                                type: Object
+                                $ref: '#/components/schemas/EmptyCart'
+                '404':
+                    description: Carrito no encontrado
+                '500':
+                    description: Error interno del servidor al consultar carrito
+    /{cid}/products/{pid}:
+        put:
+            summary: Agregar más cantidad a un producto del carrito
+            tags:
+                - Carts
+            parameters:
+                - name: cid
+                  in: path
+                  required: true
+                  schema:
+                      $type: String
+                  description: Id del carrito a modificar
+                - name: pid
+                  in: path
+                  required: true
+                  schema:
+                      $type: String
+                  description: Id del producto a modificar
+                - name: Cantidad
+                  in: body
+                  required: true
+                  schema:
+                      $type: object
+                      properties:
+                          quantity:
+                              type: number
+                  description: Cantidad a agregar
+            responses:
+                '200':
+                    description: Productos agregados satisfactoriamente
+                    content:
+                        application/json:
+                            schema:
+                                type: Object
+                                $ref: '#/components/schemas/Cart'
+                '400':
+                    description: No hay stock suficiente del producto
+                '404':
+                    description: Carrito o producto no encontrado
+                '500':
+                    description: Error interno del servidor al agregar productos
+        delete:
+            summary: Eliminar un producto del carrito
+            tags:
+                - Carts
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                      $type: String
+                  description: Id del carrito a vaciar
+                - name: pid
+                  in: path
+                  required: true
+                  schema:
+                      $type: String
+                  description: Id del producto a eliminar
+            responses:
+                '200':
+                    description: Producto eliminado satisfactoriamente
+                    content:
+                        application/json:
+                            schema:
+                                type: Object
+                                $ref: '#/components/schemas/CartProduct'
+                '404':
+                    description: Carrito o producto no encontrado
+                '500':
+                    description: Error interno del servidor al eliminar producto
+    /{cid}/product/{pid}:
+        put:
+            summary: Agregar un producto del carrito
+            tags:
+                - Carts
+            parameters:
+                - name: cid
+                  in: path
+                  required: true
+                  schema:
+                      $type: String
+                  description: Id del carrito a modificar
+                - name: pid
+                  in: path
+                  required: true
+                  schema:
+                      $type: String
+                  description: Id del producto a modificar
+            responses:
+                '200':
+                    description: Producto agregado satisfactoriamente
+                    content:
+                        application/json:
+                            schema:
+                                type: Object
+                                $ref: '#/components/schemas/Cart'
+                '400':
+                    description: No hay stock suficiente del producto
+                '404':
+                    description: Carrito o producto no encontrado
+                '500':
+                    description: Error interno del servidor al agregar producto
+    /{cid}/purchase:
+        post:
+            summary: Crear un nuevo carrito
+            tags:
+                - Carts
+            parameters:
+                - name: cid
+                  in: path
+                  required: true
+                  schema:
+                      $type: String
+                  description: Id del carrito a comprar
+            responses:
+                '200':
+                    description: Carritos creado satisfactoriamente
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                $ref: '#/components/schemas/Ticket'
+                '404':
+                    description: Carritos no encontrados
+                '500':
+                    description: Error interno del servidor al consultar carrito
+
+components:
+    schemas:
+        Cart:
+            type: object
+            properties:
+                _id:
+                    type: ObjectId
+                    description: Id autogenerado de MongoDB
+                products:
+                    $ref: '#/components/schemas/ProductsArray'
+            example:
+                _id: ObjectId('456489489465')
+                products:
+                    [
+                        { id_prod: ObjectId('456489489465'), quantity: 4 },
+                        { id_prod: ObjectId('456489484545'), quantity: 5 },
+                    ]
+        EmptyCart:
+            type: object
+            properties:
+                _id:
+                    type: ObjectId
+                    description: Id autogenerado de MongoDB
+                products:
+                    type: array
+                    description: Array de productos
+                    items:
+                        $ref: '#/components/schemas/CartProduct'
+            example:
+                _id: ObjectId('456489489465')
+                products: []
+        CartProduct:
+            type: Object
+            properties:
+                id_prod:
+                    type: ObjectId
+                    description: Id autogenerado de MongoDB
+                quantity:
+                    type: Number
+                    description: Cantidad de productos agregados
+            example: { id_prod: ObjectId('456489489465'), quantity: 4 }
+        ProductsArray:
+            type: array
+            items:
+                $ref: '#/components/schemas/CartProduct'
+            example:
+                [
+                    { id_prod: ObjectId('456489489465'), quantity: 4 },
+                    { id_prod: ObjectId('456489484545'), quantity: 5 },
+                ]
+        Ticket:
+            type: object
+            properties:
+                code:
+                    type: String
+                amount:
+                    type: Number
+                purchaser:
+                    type: String
+            example: { code: 'ASN131341', amount: 45841, purchaser: 'elpepe@elpepe.com' }
