@@ -12,4 +12,6 @@ routerUser.post('/recovery', usersController.recoveryPassword);
 
 routerUser.post('/resetpassword/:token', usersController.resetPassword);
 
+routerUser.delete('/:uid', usersController.deleteUser);
+
 export default routerUser;

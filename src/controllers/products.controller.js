@@ -122,14 +122,13 @@ const deleteProduct = async (req, res) => {
 
 	try {
 		const product = await productModel.findByIdAndDelete(pid);
-		n;
 		if (product) {
 			return res.status(200).send(product);
 		}
 
 		res.status(404).send({ error: 'Producto no encontrado' });
 	} catch (error) {
-		res.status(500).send({ error: `Error en actualizar producto ${error}` });
+		res.status(500).send({ error: `Error en eliminar producto ${error}` });
 	}
 };
 

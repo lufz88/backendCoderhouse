@@ -30,10 +30,12 @@ const res = await cartModel
 Como buscar para que te traiga la info de la referencia
 */
 
-cartSchema.pre('find', function () {
-	this.populate('products.id_prod');
-});
+// cartSchema.pre('find', function () {
+// 	this.populate('products.id_prod');
+// });
+
 // por defecto hace un populate en el find
+// lo tuve que comentar para poder correr los tests
 
 const cartModel = model('carts', cartSchema);
 

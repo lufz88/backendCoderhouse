@@ -7,7 +7,7 @@ const routerSession = Router();
 
 routerSession.post('/login', passport.authenticate('login'), sessionController.postSession);
 
-routerSession.get('/current', passportError('jwt'), sessionController.getCurrentSession);
+routerSession.get('/current', sessionController.getCurrentSession);
 
 routerSession.get(
 	'/github',

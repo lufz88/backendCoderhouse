@@ -8,7 +8,7 @@ const postUser = async (req, res) => {
 		if (!req.user) {
 			return res.status(400).send({ mensaje: 'Usuario existente' });
 		}
-		res.status(200).send({ mensaje: 'Usuario creado' });
+		return res.status(200).send({ mensaje: 'Usuario creado', user: req.user });
 	} catch (error) {
 		res.status(500).send({ mensaje: `Error al crear el usuario ${error}` });
 	}
@@ -71,6 +71,21 @@ const resetPassword = async (req, res) => {
 	}
 };
 
-const usersController = { getUser, postUser, recoveryPassword, resetPassword };
+const deleteUser = async (req, res) => {
+	const { uid } = req.params;
+
+	try {
+		const user = await userModel.findByIdAndDelete(uid);
+		if (user) {
+			return res.status(200).send(user);
+		}
+
+		res.status(404).send({ error: 'Usuario no encontrado' });
+	} catch (error) {
+		res.status(500).send({ error: `${uid} Error en eliminar usuario ${error}` });
+	}
+};
+
+const usersController = { getUser, postUser, recoveryPassword, resetPassword, deleteUser };
 
 export default usersController;
