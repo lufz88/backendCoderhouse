@@ -121,16 +121,15 @@ const putQuantity = async (req, res) => {
 	const { quantity } = req.body;
 	const product = await productModel.findById(pid);
 
-	if (product.stock < productExists.quantity + quantity) {
-		res.status(400).send({ error: `No hay stock suficiente` });
-	}
-
 	try {
 		const cart = await cartModel.findById(cid);
 
 		if (cart) {
 			const productExists = cart.products.find(prod => prod.id_prod == pid);
 			if (productExists) {
+				if (product.stock < productExists.quantity + quantity) {
+					res.status(400).send({ error: `No hay stock suficiente` });
+				}
 				productExists.quantity += quantity;
 			} else {
 				res.status(404).send({ resultado: 'Product Not Found', message: cart });

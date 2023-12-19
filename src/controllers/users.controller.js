@@ -77,7 +77,7 @@ const deleteUser = async (req, res) => {
 	try {
 		const user = await userModel.findByIdAndDelete(uid);
 		if (user) {
-			return res.status(200).send(user);
+			return res.status(200).send({ mensaje: 'Usuario eliminado', user: user });
 		}
 
 		res.status(404).send({ error: 'Usuario no encontrado' });

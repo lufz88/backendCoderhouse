@@ -66,7 +66,7 @@ const postProduct = async (req, res) => {
 		});
 
 		if (product) {
-			return res.status(201).send(product);
+			return res.status(201).send({ mensaje: 'Producto creado', product: product });
 		}
 	} catch (error) {
 		if (error.code == 11000) {
@@ -123,7 +123,7 @@ const deleteProduct = async (req, res) => {
 	try {
 		const product = await productModel.findByIdAndDelete(pid);
 		if (product) {
-			return res.status(200).send(product);
+			return res.status(201).send({ mensaje: 'Producto eliminado', product: product });
 		}
 
 		res.status(404).send({ error: 'Producto no encontrado' });

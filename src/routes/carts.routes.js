@@ -40,7 +40,7 @@ routerCart.delete(
 );
 routerCart.delete(
 	//
-	'/:cid/products/:pid',
+	'/:cid/product/:pid',
 	passportError('jwt'),
 	authorization(['user', 'premium']),
 	cartsController.deleteProductFromCart
