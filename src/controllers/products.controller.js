@@ -108,7 +108,7 @@ const putProduct = async (req, res) => {
 		});
 
 		if (product) {
-			return res.status(200).send(product);
+			return res.status(200).send({ mensaje: 'Producto actualizado', product: product });
 		}
 
 		res.status(404).send({ error: 'Producto no encontrado' });

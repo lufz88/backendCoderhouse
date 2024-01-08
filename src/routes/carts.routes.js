@@ -12,14 +12,14 @@ routerCart.post(
 	cartsController.purchaseCart
 );
 routerCart.post('/', cartsController.postCart); //
-routerCart.put(
+routerCart.post(
 	'/:cid/product/:pid',
 	passportError('jwt'),
 	authorization(['user', 'premium']),
-	cartsController.putProductToCart
+	cartsController.postProductToCart
 );
 routerCart.put(
-	'/:cid/products/:pid', //
+	'/:cid/product/:pid', //
 	passportError('jwt'),
 	authorization(['user', 'premium']),
 	cartsController.putQuantity

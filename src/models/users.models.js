@@ -40,17 +40,7 @@ const userSchemna = new Schema({
 		required: true,
 	},
 	documents: [fileSchema],
-	last_connection: Date,
-});
-
-userSchemna.pre('save', async function (next) {
-	// preconfiguración para generar un nuevo carrito al crear el usuario
-	try {
-		const newCart = await cartModel.create({});
-		this.cart = newCart._id;
-	} catch (error) {
-		next(error);
-	}
+	last_connection: { type: Date },
 });
 
 const userModel = model('users', userSchemna);

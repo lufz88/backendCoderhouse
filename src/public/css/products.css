@@ -1,14 +1,12 @@
+body {
+	margin: 24px;
+}
+
 .product-container {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 	width: 400px;
-}
-
-.data-container {
-	width: auto;
-	margin-bottom: 8px;
-	border-bottom: 1px solid black;
 }
 
 .pagination {
@@ -18,8 +16,9 @@
 }
 
 button {
-	width: 60px;
-	height: 40px;
+	width: 120px;
+	height: 60px;
+	margin-bottom: 12px;
 }
 
 .add-button {

@@ -7,6 +7,8 @@ const routerSession = Router();
 
 routerSession.post('/login', passport.authenticate('login'), sessionController.postSession);
 
+routerSession.post('/register', passport.authenticate('register'), sessionController.postRegister);
+
 routerSession.get('/current', sessionController.getCurrentSession);
 
 routerSession.get(

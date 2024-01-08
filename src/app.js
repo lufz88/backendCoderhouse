@@ -24,7 +24,7 @@ import swaggerUiExpress from 'swagger-ui-express';
 
 const app = express();
 
-const PORT = 8080;
+const PORT = 3000;
 
 /* no va a ser necesario porque ya se conecta antes cuando se crea la sesión*/
 

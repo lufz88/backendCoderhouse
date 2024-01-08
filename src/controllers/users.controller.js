@@ -3,18 +3,9 @@ import mailingController from './mail.controller.js';
 import { createHash, validatePassword } from '../utils/bcrypt.js';
 
 import crypto from 'crypto';
-const postUser = async (req, res) => {
-	try {
-		if (!req.user) {
-			return res.status(400).send({ mensaje: 'Usuario existente' });
-		}
-		return res.status(200).send({ mensaje: 'Usuario creado', user: req.user });
-	} catch (error) {
-		res.status(500).send({ mensaje: `Error al crear el usuario ${error}` });
-	}
-};
+import cartModel from '../models/carts.models.js';
 
-const getUser = async (req, res) => {
+const getUsers = async (req, res) => {
 	try {
 		const response = await userModel.find();
 		res.status(200).send(response);
@@ -75,6 +66,8 @@ const deleteUser = async (req, res) => {
 	const { uid } = req.params;
 
 	try {
+		const { cart } = await userModel.findById(uid);
+		await cartModel.findByIdAndDelete(cart);
 		const user = await userModel.findByIdAndDelete(uid);
 		if (user) {
 			return res.status(200).send({ mensaje: 'Usuario eliminado', user: user });
@@ -105,13 +98,37 @@ const uploadDocuments = async (req, res) => {
 	}
 };
 
+const deleteInactiveUsers = async (req, res) => {
+	try {
+		const inactivityLimit = new Date(Date.now() - 172800000);
+		const inactivityUsers = await userModel.find({ last_connection: { $lt: inactivityLimit } });
+
+		if (inactivityUsers.length < 1) {
+			res.status(404).send({ mensaje: 'No hay usuarios inactivos' });
+		} else {
+			for (const user of inactivityUsers) {
+				const { _id, cart } = user;
+				console.log({ id: _id, cart: cart });
+				await cartModel.findByIdAndDelete(cart);
+				await userModel.findByIdAndDelete(_id);
+			}
+			res.status(200).send({
+				resultado: `${inactivityUsers.length} eliminados con éxito`,
+				mensaje: inactivityUsers,
+			});
+		}
+	} catch (error) {
+		res.status(500).send({ resultado: 'Error al eliminar usuarios', mensaje: error });
+	}
+};
+
 const usersController = {
-	getUser,
-	postUser,
+	getUsers,
 	recoveryPassword,
 	resetPassword,
 	deleteUser,
 	uploadDocuments,
+	deleteInactiveUsers,
 };
 
 export default usersController;

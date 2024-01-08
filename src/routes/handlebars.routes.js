@@ -25,6 +25,7 @@ routerHandlebars.get('/chat', (req, res) => {
 
 routerHandlebars.get('/products', (req, res) => {
 	const user = req.session.user;
+	console.log(user);
 	res.render('products', {
 		rutaCSS: 'products',
 		rutaJS: 'products',

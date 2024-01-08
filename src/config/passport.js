@@ -8,6 +8,7 @@ import userModel from '../models/users.models.js';
 import { generateUserErrorInfo } from '../services/errors/info.js';
 import CustomError from '../services/errors/CustomError.js';
 import EErrors from '../services/errors/enums.js';
+import cartModel from '../models/carts.models.js';
 
 const LocalStrategy = local.Strategy;
 const JWTStrategy = jwt.Strategy;
@@ -30,7 +31,7 @@ const localRegister = () => {
 				usernameField: 'email',
 			},
 			async (req, username, password, done) => {
-				const { first_name, last_name, email, age } = req.body;
+				const { first_name, last_name, email, age, rol } = req.body;
 
 				if (!first_name || !last_name || !email || !age || !password) {
 					CustomError.createError({
@@ -53,12 +54,16 @@ const localRegister = () => {
 						return done('Usuario existente');
 					}
 					const passwordHash = createHash(password);
+					const newCart = await cartModel.create({});
 					const userCreated = await userModel.create({
 						first_name: first_name,
 						last_name: last_name,
 						email: email,
 						age: age,
 						password: passwordHash,
+						rol: rol ? rol : 'user',
+						cart: newCart._id,
+						last_connection: Date.now(),
 					});
 					req.user = userCreated;
 					return done(null, userCreated);

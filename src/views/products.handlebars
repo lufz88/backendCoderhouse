@@ -1,9 +1,14 @@
-<h1>Products</h1>
-<h2 id='bienvenida'>Bienvenido {{user.first_name}} {{user.last_name}}</h2>
+<h1 id='bienvenida'>Bienvenido {{user.first_name}} {{user.last_name}}</h1>
+
 <p>Edad: {{user.age}}</p>
 <p>Email: {{user.email}}</p>
 <p>Rol: {{user.rol}}</p>
+<p id='cart-ID'>CartId: {{user.cart}}</p>
+
 <button id='logout-button'>Logout</button>
+<button id='purchase-button' disabled>Finalizar Compra</button>
+
+<h2>Products</h2>
 
 <section id='products-container'></section>
 <section class='pagination'>

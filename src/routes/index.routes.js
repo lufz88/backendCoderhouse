@@ -16,7 +16,7 @@ router.use('/api/products', routerProd);
 router.use('/api/messages', routerMessage);
 router.use('/api/carts', routerCart);
 router.use('/api/users', routerUser);
-router.use('/api/sessions', routerSession);
+router.use('/api/session', routerSession);
 router.use('/api/mail', routerMailing);
 router.use('/api/tickets', routerTicket);
 router.use('/api/mockingproducts', routerMock);
